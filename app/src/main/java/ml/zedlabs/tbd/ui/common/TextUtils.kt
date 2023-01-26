@@ -93,6 +93,46 @@ fun SecondaryText(
     )
 }
 
+@Composable
+fun LargeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
+    fontSize: TextUnit = 32.sp,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+) {
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        modifier = modifier,
+        maxLines = maxLines,
+        overflow = overflow,
+        fontWeight = FontWeight.Normal
+    )
+}
+
+@Composable
+fun MediumText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
+    fontSize: TextUnit = 16.sp,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+) {
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        modifier = modifier,
+        maxLines = maxLines,
+        overflow = overflow,
+        fontWeight = FontWeight.Light
+    )
+}
+
 
 
 

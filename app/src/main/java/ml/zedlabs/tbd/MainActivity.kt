@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ml.zedlabs.tbd.databinding.ActivityMainBinding
 import ml.zedlabs.tbd.ui.profile.ProfileViewModel
+import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.util.asApplication
 import ml.zedlabs.tbd.util.changeStatusBarColor
 
@@ -34,9 +35,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var billingClient: BillingClient
 
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     companion object {
         const val P_ID_APP_SUB = "p_id_app_sub"
+
         enum class BillingAction {
             SHOW_PRODUCTS,
             CHECK_ACTIVE_SUB
@@ -61,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -69,21 +71,33 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                profileViewModel.themeState.collectLatest { value ->
-                    if (value) {
-                        changeStatusBarColor(
-                            ContextCompat.getColor(this@MainActivity, R.color.bg_dark),
-                            false
-                        )
-                        binding.root.background =
-                            ResourcesCompat.getDrawable(resources, R.color.bg_dark, null)
-                    } else {
-                        changeStatusBarColor(
-                            ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-                            true
-                        )
-                        binding.root.background =
-                            ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
+                mainViewModel.appTheme.collectLatest { value ->
+                    when (value) {
+                        AppThemeType.Dark.name -> {
+                            changeStatusBarColor(
+                                ContextCompat.getColor(this@MainActivity, R.color.bg_dark),
+                                false
+                            )
+                            binding.root.background =
+                                ResourcesCompat.getDrawable(resources, R.color.bg_dark, null)
+                        }
+
+                        AppThemeType.LightAlternate.name -> {
+                            changeStatusBarColor(
+                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+                                true
+                            )
+                            binding.root.background =
+                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
+                        }
+                        else -> {
+                            changeStatusBarColor(
+                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+                                true
+                            )
+                            binding.root.background =
+                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
+                        }
                     }
                 }
             }
@@ -116,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     lifecycleScope.launch {
-                        when(billingAction) {
+                        when (billingAction) {
                             BillingAction.SHOW_PRODUCTS -> processProductList()
                             BillingAction.CHECK_ACTIVE_SUB -> checkForActiveSub()
                         }
@@ -145,7 +159,7 @@ class MainActivity : AppCompatActivity() {
                 profileViewModel.setSubState(true)
             }
         }
-        if(purchasesResult.purchasesList.isEmpty()) {
+        if (purchasesResult.purchasesList.isEmpty()) {
             profileViewModel.setSubState(false)
         }
 
