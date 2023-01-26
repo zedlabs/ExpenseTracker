@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_navigation"
+    app:startDestination="@id/home_fragment">
+
+    <action
+        android:id="@+id/action_global_list"
+        app:destination="@id/list_bottom" />
+
+
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="ml.zedlabs.tbd.ui.home.HomeFragment"
+        android:label="Home" >
+        <action
+            android:id="@+id/home_to_premium"
+            app:destination="@id/premium_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/premium_fragment"
+        android:name="ml.zedlabs.tbd.ui.profile.PremiumFragment"
+        android:label="Premium" />
+
+</navigation>

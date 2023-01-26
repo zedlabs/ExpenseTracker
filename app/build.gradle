@@ -1,0 +1,166 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+//    id 'com.google.gms.google-services'
+//    id 'com.google.firebase.crashlytics'
+}
+
+android {
+    compileSdk 33
+    defaultConfig {
+        applicationId "ml.zedlabs.tbd"
+        minSdk 23
+        targetSdk 33
+        versionCode 2
+        versionName "2"
+        buildConfigField("String", "APIKEY", APIKEY)
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+//    signingConfigs {
+//        debug {
+//            storeFile file(project.property("MyApp.signing"))
+//            storePassword project.property("MyApp.signing.password")
+//            keyAlias project.property("MyApp.signing.alias")
+//            keyPassword project.property("MyApp.signing.password")
+//        }
+//    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            // enabling minify has 50% app size reduction here but need to set custom proguard
+            // rules as the app does not work with the default configuration
+            // disabling for now
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug{
+           // signingConfig signingConfigs.debug
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+
+    /** Native **/
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+
+    /** Material **/
+    implementation 'com.google.android.material:material:1.6.1'
+
+    /** Compose **/
+    implementation "androidx.compose.ui:ui:1.3.0-rc01"
+    implementation "androidx.compose.material:material:1.2.1"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.2.1"
+    implementation 'androidx.activity:activity-compose:1.6.0'
+    implementation("androidx.navigation:navigation-compose:2.6.0-alpha02")
+    debugImplementation "androidx.compose.ui:ui-tooling:1.2.1"
+
+    /** Dagger Hilt DI **/
+    implementation "com.google.dagger:hilt-android:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.44"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
+    /** Retrofit **/
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    /** Coil **/
+    implementation("io.coil-kt:coil:1.4.0")
+    implementation("io.coil-kt:coil-compose:1.4.0")
+
+    /** navigation **/
+    def nav_version_ktx = "2.5.0-rc01"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version_ktx"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version_ktx"
+
+    /** Material **/
+    def material_version = "1.6.0"
+    implementation "com.google.android.material:material:$material_version"
+
+    /** Fragment **/
+    def fragment_version = "1.4.1"
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+    /** Paging Compose **/
+    implementation("androidx.paging:paging-compose:1.0.0-alpha16")
+
+    /** debug Crash reporting **/
+    //debugImplementation "com.github.haroldadmin:WhatTheStack:1.0.0-alpha03"
+
+    /** Preference DataStore **/
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+//    /** Rating Bar **/
+//    implementation 'com.github.a914-gowtham:compose-ratingbar:1.2.4'
+//
+//    /**Firebase**/
+//    implementation platform('com.google.firebase:firebase-bom:31.0.2')
+//    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+//    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    def splashScreenVersion = "1.0.0"
+    implementation("androidx.core:core-splashscreen:$splashScreenVersion")
+
+    //charts
+    implementation "com.patrykandpatryk.vico:compose:1.6.0"
+
+    // play billing
+    def billing_version = "5.1.0"
+    implementation "com.android.billingclient:billing-ktx:$billing_version"
+
+    /** room **/
+    def roomVersion = "2.5.0-beta01"
+    api "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    implementation "androidx.room:room-paging:2.5.0-beta01"
+
+    /** jsoup HTML parser library @ https://jsoup.org/ **/
+//    implementation 'org.jsoup:jsoup:1.14.3'
+
+
+    /** Unit Test **/
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.1.1"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.1.1"
+}
+
+kapt {
+    correctErrorTypes true
+}
