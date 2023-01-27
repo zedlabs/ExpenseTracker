@@ -3,6 +3,7 @@ package ml.zedlabs.tbd.ui.common
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -53,9 +54,20 @@ fun Spacer12() {
 }
 
 @Composable
+fun HSpacer12() {
+    Spacer(modifier = Modifier.width(12.dp))
+}
+
+@Composable
+fun HSpacer24() {
+    Spacer(modifier = Modifier.width(24.dp))
+}
+
+@Composable
 fun Spacer24() {
     Spacer(modifier = Modifier.height(24.dp))
 }
+
 @Composable
 fun PrimaryText(
     text: String,

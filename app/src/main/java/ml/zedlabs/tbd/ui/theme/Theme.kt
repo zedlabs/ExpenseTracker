@@ -1,6 +1,5 @@
 package ml.zedlabs.tbd.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -56,7 +55,7 @@ val DarkThemeColors = lightColors(
  * instead on light and dark only
  */
 @Composable
-fun RedTheme(
+fun ExpenseTheme(
     appTheme: String,
     content: @Composable () -> Unit
 ) {

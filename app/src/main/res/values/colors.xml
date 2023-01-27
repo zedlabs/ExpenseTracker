@@ -15,6 +15,7 @@
     <color name="teal_secondary_dark">#FF00363a</color>
     <color name="bg_light">#BF1943</color>
     <color name="bg_dark">#FF121212</color>
+    <color name="bg_white">#CCC4C4</color>
 
     <color name="ld_1">#F2AEB7</color>
     <color name="ld_2">#F0F2E4</color>

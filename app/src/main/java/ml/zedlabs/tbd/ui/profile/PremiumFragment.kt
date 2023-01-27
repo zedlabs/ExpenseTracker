@@ -46,7 +46,7 @@ import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.common.TitleTextH2
 import ml.zedlabs.tbd.ui.theme.AppThemeType
-import ml.zedlabs.tbd.ui.theme.RedTheme
+import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 
 @AndroidEntryPoint
 class PremiumFragment : Fragment() {
@@ -61,7 +61,7 @@ class PremiumFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                RedTheme(
+                ExpenseTheme(
                     appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
                 ) {
                     PremiumScreenMainLayout()

@@ -18,8 +18,10 @@ import com.android.billingclient.api.*
 import com.android.billingclient.api.Purchase.PurchaseState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ml.zedlabs.tbd.databinding.ActivityMainBinding
 import ml.zedlabs.tbd.ui.profile.ProfileViewModel
@@ -90,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                             binding.root.background =
                                 ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
                         }
+
                         else -> {
                             changeStatusBarColor(
                                 ContextCompat.getColor(this@MainActivity, R.color.bg_light),
@@ -103,18 +106,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-//        navController = Navigation.findNavController(this, R.id.fragment)
+        navController = Navigation.findNavController(this, R.id.fragment)
 //        binding.bottomNavigation.setupWithNavController(navController)
         this.asApplication()?.logFirebase("APP_OPEN")
         createBillingClient(BillingAction.CHECK_ACTIVE_SUB)
-//        navController.addOnDestinationChangedListener { _, destination, _ ->
-//            when (destination.id) {
-//                R.id.movie_detail_screen, R.id.tv_detail_screen, R.id.chart_screen -> binding.bottomNavigation.visibility =
-//                    View.GONE
-//
-//                else -> binding.bottomNavigation.visibility = View.VISIBLE
-//            }
-//        }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.transaction_list_fragment -> {
+                    lifecycleScope.launch {
+                        delay(420)
+                        changeStatusBarColor(
+                            ContextCompat.getColor(this@MainActivity, R.color.bg_white),
+                            false
+                        )
+                    }
+                }
+
+                else -> {
+                    changeStatusBarColor(
+                        ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+                        false
+                    )
+                }
+            }
+        }
 
     }
 

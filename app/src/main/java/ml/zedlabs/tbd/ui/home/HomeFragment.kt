@@ -5,34 +5,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.ui.common.DefaultTopButton
+import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.theme.AppThemeType
-import ml.zedlabs.tbd.ui.theme.RedTheme
+import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 
 class HomeFragment : Fragment() {
 
@@ -45,7 +52,7 @@ class HomeFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                RedTheme(
+                ExpenseTheme(
                     appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
                 ) {
                     Home()
@@ -57,6 +64,7 @@ class HomeFragment : Fragment() {
     @Composable
     fun Home() {
         Column {
+            // Top 65% is red
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colors.background)
@@ -64,6 +72,7 @@ class HomeFragment : Fragment() {
             ) {
                 HomeTopSection()
             }
+            // Bottom 35% is off-white
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colors.secondary)
@@ -75,31 +84,73 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
+    fun HomeTopSection() {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Spacer24()
+                DefaultTopButton(imageVector = Icons.Rounded.Person) {
+                    redirectToProfile()
+                }
+                LargeText(text = "          The Chart tracks your spending over the past month")
+                Spacer12()
+                MediumText(text = "Your largest spend was of $43 on Groceries. ")
+            }
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f, false)
+                        .align(Alignment.End)
+                        .background(MaterialTheme.colors.onSecondary)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                        .clickable {
+                            redirectToTransactionList()
+                        }
+                ) {
+                    MediumText(
+                        text = "Add Expense / Income",
+                        color = MaterialTheme.colors.secondary,
+                        fontSize = 14.sp
+                    )
+                    HSpacer12()
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowForward,
+                        tint = MaterialTheme.colors.secondary,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .rotate(-45f),
+                        contentDescription = "Add expense screen redirect button"
+                    )
+                }
+                Spacer24()
+                Spacer12()
+            }
+
+        }
+    }
+
+    @Composable
     fun HomeBottomSection() {
         Column(modifier = Modifier.padding(horizontal = 12.dp)) {
             LargeText(
                 modifier = Modifier.padding(vertical = 30.dp),
-                text = "Have any purpose",
+                text = "Redirect to Expenses",
                 fontSize = 64.sp,
                 color = MaterialTheme.colors.onSecondary
             )
         }
     }
 
-    @Composable
-    fun HomeTopSection() {
-        Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-            Spacer24()
-            DefaultTopButton(imageVector = Icons.Rounded.Person) {
-                redirectToProfile()
-            }
-            LargeText(text = "          The Chart tracks your spending over the past month")
-            Spacer12()
-            MediumText(text = "Your largest spend was of $43 on Groceries. ")
-        }
+
+    private fun redirectToProfile() {
+        view?.findNavController()?.navigate(R.id.home_to_profile)
     }
 
-    fun redirectToProfile() {
-        view?.findNavController()?.navigate(R.id.home_to_profile)
+    private fun redirectToTransactionList() {
+        view?.findNavController()?.navigate(R.id.home_to_tl)
     }
 }

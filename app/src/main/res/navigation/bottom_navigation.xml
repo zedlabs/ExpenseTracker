@@ -20,12 +20,24 @@
         <action
             android:id="@+id/home_to_profile"
             app:destination="@id/profile_fragment" />
+        <action
+            android:id="@+id/home_to_tl"
+            app:destination="@id/transaction_list_fragment"
+            app:enterAnim="@animator/slide_in_bottom"
+            app:exitAnim="@animator/no_anim"
+            app:popExitAnim="@animator/slide_out_bottom"
+            />
     </fragment>
 
     <fragment
         android:id="@+id/profile_fragment"
         android:name="ml.zedlabs.tbd.ui.profile.ProfileFragment"
         android:label="Profile" />
+
+    <fragment
+        android:id="@+id/transaction_list_fragment"
+        android:name="ml.zedlabs.tbd.ui.transaction.TransactionListFragment"
+        android:label="TransactionList" />
 
     <fragment
         android:id="@+id/premium_fragment"
