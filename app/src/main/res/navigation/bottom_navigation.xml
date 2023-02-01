@@ -3,7 +3,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_navigation"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/onboarding_fragment">
 
     <action
         android:id="@+id/action_global_list"
@@ -43,5 +43,16 @@
         android:id="@+id/premium_fragment"
         android:name="ml.zedlabs.tbd.ui.profile.PremiumFragment"
         android:label="Premium" />
+
+
+    <fragment
+        android:id="@+id/onboarding_fragment"
+        android:name="ml.zedlabs.tbd.ui.onboarding.OnboardingFragment"
+        android:label="Onboarding" >
+        <action
+            android:id="@+id/onb_to_home"
+            app:destination="@id/home_fragment" />
+    </fragment>
+
 
 </navigation>

@@ -34,7 +34,24 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="home_to_tl">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="onboarding_fragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="-297" />
+                            <option name="y" value="-232" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>

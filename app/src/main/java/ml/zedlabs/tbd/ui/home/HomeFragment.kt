@@ -113,13 +113,13 @@ class HomeFragment : Fragment() {
                 ) {
                     MediumText(
                         text = "Add Expense / Income",
-                        color = MaterialTheme.colors.secondary,
+                        color = MaterialTheme.colors.primary,
                         fontSize = 14.sp
                     )
                     HSpacer12()
                     Icon(
                         imageVector = Icons.Rounded.ArrowForward,
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colors.primary,
                         modifier = Modifier
                             .size(18.dp)
                             .rotate(-45f),

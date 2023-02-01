@@ -1,4 +1,4 @@
-package ml.zedlabs.tbd.di
+package ml.zedlabs.tbd.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -56,6 +56,17 @@ object RepositoryModule {
             dataStore,
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideOnboardingRepository(
+        dataStore: DataStore<Preferences>,
+    ): OnboardingRepository {
+        return OnboardingRepository(
+            dataStore
+        )
+    }
+
 
     @Provides
     @Singleton
