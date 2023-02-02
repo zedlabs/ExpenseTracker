@@ -126,6 +126,26 @@ fun LargeText(
 }
 
 @Composable
+fun SemiLargeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
+    fontSize: TextUnit = 24.sp,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+) {
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        modifier = modifier,
+        maxLines = maxLines,
+        overflow = overflow,
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+@Composable
 fun MediumText(
     text: String,
     modifier: Modifier = Modifier,

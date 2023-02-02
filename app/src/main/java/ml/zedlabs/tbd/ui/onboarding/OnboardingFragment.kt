@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,25 +14,33 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.model.common.CurrencyItem
+import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
+import ml.zedlabs.tbd.ui.common.SemiLargeText
+import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
+import ml.zedlabs.tbd.util.changeStatusBarColor
 
 @AndroidEntryPoint
 class OnboardingFragment : Fragment() {
@@ -58,11 +67,15 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
-    fun Onboarding() {
+    fun Onboarding(modifier: Modifier = Modifier) {
+        (activity as? MainActivity?)?.changeStatusBarColor(
+            MaterialTheme.colors.background.toArgb(),
+            false
+        )
         val countryData = onboardingViewModel.countryList
-        Column() {
+        Column(modifier = modifier.background(MaterialTheme.colors.secondary)) {
             LazyColumn(
-                Modifier.weight(1f)
+                modifier.weight(1f)
             ) {
                 item {
                     OnboardingHeader()
@@ -72,36 +85,58 @@ class OnboardingFragment : Fragment() {
                 }
             }
             Button(
-                onClick = { view?.findNavController()?.navigate(R.id.onb_to_home) },
-                Modifier.align(CenterHorizontally)
+                onClick = { navigateToHome() },
+                modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.primary)
+                    .align(CenterHorizontally)
             ) {
                 MediumText(text = "Continue!")
             }
         }
     }
 
+    private fun navigateToHome() {
+        onboardingViewModel.commitCurrencyToPrefs()
+        view?.findNavController()?.navigate(R.id.onb_to_home)
+    }
+
     @Composable
     fun OnboardingHeader() {
-        Row(
+        Column(
             Modifier
                 .fillMaxWidth()
+                .background(MaterialTheme.colors.background)
                 .padding(12.dp)
         ) {
-            MediumText(text = "Welcome! Please select your currency before you continue")
+            LargeText(text = "Welcome !", color = MaterialTheme.colors.primary)
+            Spacer12()
+            SemiLargeText(
+                text = "Please select your currency before you continue",
+                color = MaterialTheme.colors.primary
+            )
         }
     }
 
     @Composable
     fun CountryListItem(item: CurrencyItem) {
+        val selectedItem = onboardingViewModel.selectedCountryCodeState.value
+
         Row(
             modifier = onboardingRowModifier
                 .clickable {
                     onboardingViewModel.countrySelected(item)
                 }
-                .padding(12.dp)
+                .padding(16.dp)
         ) {
-            MediumText(text = item.countryName + "  " + item.flag)
-            if (item.countryCode == onboardingViewModel.selectedCountryCodeState.value) {
+            MediumText(
+                text = item.flag + "   " + item.countryName,
+                color = MaterialTheme.colors.onSecondary
+            )
+            if (selectedItem != null
+                && item.countryCode == selectedItem.countryCode
+                && item.currencySymbol == selectedItem.currencySymbol
+            ) {
                 Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "check")
             }
         }

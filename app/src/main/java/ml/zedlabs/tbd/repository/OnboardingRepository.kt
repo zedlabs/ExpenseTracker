@@ -2,24 +2,35 @@ package ml.zedlabs.tbd.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import ml.zedlabs.tbd.model.common.Currency
+import ml.zedlabs.tbd.ui.onboarding.CURRENCY_DATA
+import ml.zedlabs.tbd.ui.onboarding.CurrencyData
+import ml.zedlabs.tbd.ui.theme.AppThemeType
 import javax.inject.Inject
 
 class OnboardingRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    fun updateUserCurrency(currency: Currency) {
-        // set county in the user data store
+    private val APP_CURRENCY = stringPreferencesKey("app_currency")
+
+    private val appCurrency: Flow<String> = dataStore.data.map { preferences ->
+        preferences[APP_CURRENCY] ?: "$"
+    }
+
+    suspend fun updateUserCurrency(currency: Currency) {
+        dataStore.edit {settings ->
+            settings[APP_CURRENCY] = CURRENCY_DATA[currency.currencyCode]?.symbol ?: "$"
+        }
     }
 
     fun getCurrentCurrency(): Flow<String> {
-        // get current country or null from the preferences
-        return flow {
-            ""
-        }
+        return appCurrency
     }
 
 

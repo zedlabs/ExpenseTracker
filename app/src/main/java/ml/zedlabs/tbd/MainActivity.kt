@@ -71,40 +71,40 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.appTheme.collectLatest { value ->
-                    when (value) {
-                        AppThemeType.Dark.name -> {
-                            changeStatusBarColor(
-                                ContextCompat.getColor(this@MainActivity, R.color.bg_dark),
-                                false
-                            )
-                            binding.root.background =
-                                ResourcesCompat.getDrawable(resources, R.color.bg_dark, null)
-                        }
-
-                        AppThemeType.LightAlternate.name -> {
-                            changeStatusBarColor(
-                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-                                true
-                            )
-                            binding.root.background =
-                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
-                        }
-
-                        else -> {
-                            changeStatusBarColor(
-                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-                                true
-                            )
-                            binding.root.background =
-                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
-                        }
-                    }
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                mainViewModel.appTheme.collectLatest { value ->
+//                    when (value) {
+//                        AppThemeType.Dark.name -> {
+//                            changeStatusBarColor(
+//                                ContextCompat.getColor(this@MainActivity, R.color.bg_dark),
+//                                false
+//                            )
+//                            binding.root.background =
+//                                ResourcesCompat.getDrawable(resources, R.color.bg_dark, null)
+//                        }
+//
+//                        AppThemeType.LightAlternate.name -> {
+//                            changeStatusBarColor(
+//                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+//                                true
+//                            )
+//                            binding.root.background =
+//                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
+//                        }
+//
+//                        else -> {
+//                            changeStatusBarColor(
+//                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+//                                true
+//                            )
+//                            binding.root.background =
+//                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         navController = Navigation.findNavController(this, R.id.fragment)
 //        binding.bottomNavigation.setupWithNavController(navController)
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                else -> {
+                R.id.home_fragment -> {
                     changeStatusBarColor(
                         ContextCompat.getColor(this@MainActivity, R.color.bg_light),
                         false

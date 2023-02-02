@@ -1,19 +1,15 @@
 package ml.zedlabs.tbd.ui.onboarding
 
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.model.common.Currency
 import ml.zedlabs.tbd.model.common.CurrencyItem
 import ml.zedlabs.tbd.model.common.EmojiData
 import ml.zedlabs.tbd.repository.OnboardingRepository
-import java.util.Collections.copy
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,8 +17,8 @@ class OnboardingViewModel @Inject constructor(
     val onboardingRepository: OnboardingRepository
 ) : ViewModel() {
 
-    private val NO_SELECTION = "NO_SELECTION"
-    val selectedCountryCodeState = mutableStateOf(NO_SELECTION)
+
+    val selectedCountryCodeState = mutableStateOf<CurrencyItem?>(null)
 
     val countryList = CURRENCY_DATA.flatMap { (key, value) ->
         value.countryCodes.map {
@@ -46,9 +42,15 @@ class OnboardingViewModel @Inject constructor(
     fun countrySelected(currencyData: CurrencyItem) {
         val TAG = "ONBVM"
         Log.e(TAG, "countrySelected: ${currencyData.countryCode}")
-        selectedCountryCodeState.value = currencyData.countryCode
-        // saves the currency in the preferences
-        // the app will default to this currency in the future
+
+        selectedCountryCodeState.value = currencyData
+    }
+
+    fun commitCurrencyToPrefs() {
+        val data = selectedCountryCodeState.value?.currency ?: return
+        viewModelScope.launch {
+            onboardingRepository.updateUserCurrency(data)
+        }
     }
 
 }
