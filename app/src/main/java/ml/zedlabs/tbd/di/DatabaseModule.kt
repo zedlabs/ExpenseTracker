@@ -11,7 +11,6 @@ import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeDao
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeDatabase
 import ml.zedlabs.tbd.databases.transaction_db.TransactionDao
 import ml.zedlabs.tbd.databases.transaction_db.TransactionDatabase
-import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module

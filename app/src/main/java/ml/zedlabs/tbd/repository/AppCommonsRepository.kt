@@ -13,8 +13,6 @@ import ml.zedlabs.tbd.ui.theme.AppThemeType
 import javax.inject.Inject
 
 class AppCommonsRepository @Inject constructor(
-    private val jsonApi: JsonApi,
-    private val addedListDao: AddedListDao,
     private val dataStore: DataStore<Preferences>,
 ) {
 
