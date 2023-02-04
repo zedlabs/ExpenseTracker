@@ -16,6 +16,7 @@ import ml.zedlabs.tbd.repository.AppCommonsRepository
 import ml.zedlabs.tbd.repository.WebParsingRepository
 import ml.zedlabs.tbd.databases.media_db.AddedListDao
 import ml.zedlabs.tbd.databases.media_db.AddedListDatabase
+import java.util.concurrent.ThreadLocalRandom
 import javax.inject.Singleton
 
 const val PREFERENCES_STORE_NAME = "settings"
@@ -73,6 +74,13 @@ object RepositoryModule {
     fun provideWebParsingRepository(
     ): WebParsingRepository {
         return WebParsingRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionListRepository(
+    ): TransactionRepository {
+        return TransactionRepository()
     }
 
 

@@ -38,12 +38,14 @@ import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
+import ml.zedlabs.tbd.ui.onboarding.OnboardingViewModel
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 
 class HomeFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
+    private val onboardingViewModel: OnboardingViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,6 +87,7 @@ class HomeFragment : Fragment() {
 
     @Composable
     fun HomeTopSection() {
+        val currency = onboardingViewModel.localCurrency.collectAsState("")
         Column(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
@@ -98,7 +101,7 @@ class HomeFragment : Fragment() {
                 }
                 LargeText(text = "          The Chart tracks your spending over the past month")
                 Spacer12()
-                MediumText(text = "Your largest spend was of $43 on Groceries. ")
+                MediumText(text = "Your largest spend was of ${currency.value}43 on Groceries. ")
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(

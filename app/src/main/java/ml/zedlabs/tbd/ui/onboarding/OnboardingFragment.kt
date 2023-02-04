@@ -48,7 +48,7 @@ import ml.zedlabs.tbd.util.changeStatusBarColor
 class OnboardingFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val onboardingViewModel: OnboardingViewModel by viewModels()
+    private val onboardingViewModel: OnboardingViewModel by activityViewModels()
     private val onboardingRowModifier = Modifier
         .fillMaxWidth()
 

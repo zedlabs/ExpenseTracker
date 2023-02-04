@@ -18,6 +18,7 @@ class OnboardingViewModel @Inject constructor(
 ) : ViewModel() {
 
     val selectedCountryCodeState = mutableStateOf<CurrencyItem?>(null)
+    val localCurrency = onboardingRepository.getCurrentCurrency()
 
     val countryList = CURRENCY_DATA.flatMap { (key, value) ->
         value.countryCodes.map {
