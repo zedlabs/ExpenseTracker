@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -23,11 +25,11 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ml.zedlabs.tbd.MainActivity
@@ -88,10 +90,16 @@ class OnboardingFragment : Fragment() {
                 onClick = { navigateToHome() },
                 modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.primary)
                     .align(CenterHorizontally)
+                    .padding(horizontal = 32.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                enabled = onboardingViewModel.selectedCountryCodeState.value != null
             ) {
-                MediumText(text = "Continue!")
+                MediumText(
+                    text = "Continue!",
+                    modifier = modifier.background(MaterialTheme.colors.background),
+                    fontWeight = FontWeight.Medium,
+                )
             }
         }
     }
@@ -130,7 +138,7 @@ class OnboardingFragment : Fragment() {
                 .padding(16.dp)
         ) {
             MediumText(
-                text = item.flag + "   " + item.countryName,
+                text = item.flag + "   " + item.countryName + "   ${item.currencySymbol}   ",
                 color = MaterialTheme.colors.onSecondary
             )
             if (selectedItem != null

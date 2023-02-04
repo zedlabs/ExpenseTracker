@@ -23,9 +23,9 @@ class OnboardingRepository @Inject constructor(
         preferences[APP_CURRENCY] ?: "$"
     }
 
-    suspend fun updateUserCurrency(currency: Currency) {
+    suspend fun updateUserCurrency(symbol: String) {
         dataStore.edit {settings ->
-            settings[APP_CURRENCY] = CURRENCY_DATA[currency.currencyCode]?.symbol ?: "$"
+            settings[APP_CURRENCY] = symbol ?: "$"
         }
     }
 

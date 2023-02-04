@@ -153,6 +153,7 @@ fun MediumText(
     fontSize: TextUnit = 16.sp,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
+    fontWeight: FontWeight = FontWeight.Light
 ) {
     Text(
         text = text,
@@ -161,7 +162,7 @@ fun MediumText(
         modifier = modifier,
         maxLines = maxLines,
         overflow = overflow,
-        fontWeight = FontWeight.Light
+        fontWeight = fontWeight
     )
 }
 

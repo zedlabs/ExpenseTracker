@@ -14,9 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    val onboardingRepository: OnboardingRepository
+    private val onboardingRepository: OnboardingRepository
 ) : ViewModel() {
-
 
     val selectedCountryCodeState = mutableStateOf<CurrencyItem?>(null)
 
@@ -40,14 +39,11 @@ class OnboardingViewModel @Inject constructor(
     }.sortedBy { it.countryName }
 
     fun countrySelected(currencyData: CurrencyItem) {
-        val TAG = "ONBVM"
-        Log.e(TAG, "countrySelected: ${currencyData.countryCode}")
-
         selectedCountryCodeState.value = currencyData
     }
 
     fun commitCurrencyToPrefs() {
-        val data = selectedCountryCodeState.value?.currency ?: return
+        val data = selectedCountryCodeState.value?.currencySymbol ?: return
         viewModelScope.launch {
             onboardingRepository.updateUserCurrency(data)
         }

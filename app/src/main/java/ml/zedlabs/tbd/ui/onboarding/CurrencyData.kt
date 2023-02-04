@@ -371,7 +371,7 @@ val CURRENCY_DATA = mapOf(
     "HUF" to CurrencyData(num = 348, scale = 2, name = "Hungarian forint", symbol = "Ft", countryCodes = listOf("HU")),
     "IDR" to CurrencyData(num = 360, scale = 2, name = "Indonesian rupiah", symbol = "Rp", countryCodes = listOf("ID")),
     "ILS" to CurrencyData(num = 376, scale = 2, name = "Israeli new shekel", symbol = "₪", countryCodes = listOf("IL")),
-    "INR" to CurrencyData(num = 356, scale = 2, name = "Indian rupee", symbol = "Rs.", countryCodes = listOf("IN", "BT")),
+    "INR" to CurrencyData(num = 356, scale = 2, name = "Indian rupee", symbol = "₹", countryCodes = listOf("IN", "BT")),
     "IQD" to CurrencyData(num = 368, scale = 3, name = "Iraqi dinar", symbol = "د.ع.", countryCodes = listOf("IQ")),
     "IRR" to CurrencyData(num = 364, scale = 2, name = "Iranian rial", symbol = "﷼", countryCodes = listOf("IR")),
     "ISK" to CurrencyData(num = 352, scale = 0, name = "Icelandic króna", symbol = "kr", countryCodes = listOf("IS")),
