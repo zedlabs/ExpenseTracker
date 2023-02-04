@@ -1,5 +1,6 @@
 package ml.zedlabs.tbd.ui.transaction
 
+import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,6 +53,22 @@ class TransactionViewModel @Inject constructor(
     fun deleteAllFromDb() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteAll()
+        }
+    }
+
+    //** fakes **//
+    fun addFakeEntryToTransactionDb() {
+        viewModelScope.launch {
+            repository.addNewTransaction(
+                TransactionItem(
+                    transactionId = (0..100).random(),
+                    isExpense = (0..100).random() % 2 == 0,
+                    timestamp = (555550L..1000000000L).random(),
+                    note = "this is a sample note attached to a transaction",
+                    type = "Grocery"
+
+                )
+            )
         }
     }
 
