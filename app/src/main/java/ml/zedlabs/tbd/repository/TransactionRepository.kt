@@ -38,6 +38,10 @@ class TransactionRepository @Inject constructor(
         transactionDao.delete(transactionId)
     }
 
+    suspend fun deleteAll() {
+        transactionDao.deleteAll()
+    }
+
 //    suspend fun updateWatchStatus(update: WatchStatusUpdate) {
 //        addedListDao.update(
 //            ml.zedlabs.data.local_db.WatchStatusUpdate(
