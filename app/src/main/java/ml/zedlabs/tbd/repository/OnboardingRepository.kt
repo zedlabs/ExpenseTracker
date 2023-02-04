@@ -20,12 +20,12 @@ class OnboardingRepository @Inject constructor(
     private val APP_CURRENCY = stringPreferencesKey("app_currency")
 
     private val appCurrency: Flow<String> = dataStore.data.map { preferences ->
-        preferences[APP_CURRENCY] ?: "$"
+        preferences[APP_CURRENCY] ?: "NOT_SET"
     }
 
     suspend fun updateUserCurrency(symbol: String) {
         dataStore.edit {settings ->
-            settings[APP_CURRENCY] = symbol ?: "$"
+            settings[APP_CURRENCY] = symbol
         }
     }
 

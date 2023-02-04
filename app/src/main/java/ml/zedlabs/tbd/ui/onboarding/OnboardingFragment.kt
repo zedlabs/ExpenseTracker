@@ -1,6 +1,8 @@
 package ml.zedlabs.tbd.ui.onboarding
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -32,9 +35,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.asStateFlow
 import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
+import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.CurrencyItem
 import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
@@ -57,12 +62,28 @@ class OnboardingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         return ComposeView(requireContext()).apply {
             setContent {
-                ExpenseTheme(
-                    appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
-                ) {
-                    Onboarding()
+                val currency by onboardingViewModel.localCurrency.collectAsState()
+                when (currency) {
+                    is Resource.Error -> {
+                        //error implies currency is not set
+                        ExpenseTheme(
+                            appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
+                        ) {
+                            Onboarding()
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        navigateToHome()
+                    }
+
+                    else -> {
+                        // need to wait at this stage
+                        Log.e(TAG, "onCreateView: Error on onboarding")
+                    }
                 }
             }
         }
@@ -87,7 +108,7 @@ class OnboardingFragment : Fragment() {
                 }
             }
             Button(
-                onClick = { navigateToHome() },
+                onClick = { commitAndNavigateToHome() },
                 modifier
                     .fillMaxWidth()
                     .align(CenterHorizontally)
@@ -104,8 +125,12 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    private fun navigateToHome() {
+    fun commitAndNavigateToHome() {
         onboardingViewModel.commitCurrencyToPrefs()
+        navigateToHome()
+    }
+
+    private fun navigateToHome() {
         view?.findNavController()?.navigate(R.id.onb_to_home)
     }
 

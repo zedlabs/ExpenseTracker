@@ -5,7 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
+import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.Currency
 import ml.zedlabs.tbd.model.common.CurrencyItem
 import ml.zedlabs.tbd.model.common.EmojiData
@@ -18,7 +23,26 @@ class OnboardingViewModel @Inject constructor(
 ) : ViewModel() {
 
     val selectedCountryCodeState = mutableStateOf<CurrencyItem?>(null)
-    val localCurrency = onboardingRepository.getCurrentCurrency()
+    val _localCurrency = MutableStateFlow<Resource<String>>(Resource.Uninitialised())
+    val localCurrency = _localCurrency.asStateFlow()
+
+    init {
+        getCurrencyFromLocalStorage()
+    }
+
+    private fun getCurrencyFromLocalStorage() {
+        _localCurrency.value = Resource.Loading()
+        val currencyValue = onboardingRepository.getCurrentCurrency()
+        viewModelScope.launch {
+            currencyValue.collectLatest {
+                _localCurrency.value = when (it) {
+                    "" -> Resource.Error(Throwable("Invalid currency value, set again"))
+                    "NOT_SET" -> Resource.Error(Throwable("currency not set"))
+                    else -> Resource.Success(it)
+                }
+            }
+        }
+    }
 
     val countryList = CURRENCY_DATA.flatMap { (key, value) ->
         value.countryCodes.map {
