@@ -61,12 +61,10 @@ class TransactionViewModel @Inject constructor(
         viewModelScope.launch {
             repository.addNewTransaction(
                 TransactionItem(
-                    transactionId = (0..100).random(),
                     isExpense = (0..100).random() % 2 == 0,
                     timestamp = (555550L..1000000000L).random(),
                     note = "this is a sample note attached to a transaction",
                     type = "Grocery"
-
                 )
             )
         }

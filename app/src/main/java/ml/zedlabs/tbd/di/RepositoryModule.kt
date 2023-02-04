@@ -10,6 +10,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeDao
+import ml.zedlabs.tbd.databases.transaction_db.TransactionDao
 import ml.zedlabs.tbd.repository.AppCommonsRepository
 import ml.zedlabs.tbd.repository.OnboardingRepository
 import ml.zedlabs.tbd.repository.TransactionRepository
@@ -44,8 +46,10 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideTransactionListRepository(
+        transactionDao: TransactionDao,
+        expenseTypeDao: ExpenseTypeDao
     ): TransactionRepository {
-        return TransactionRepository()
+        return TransactionRepository(transactionDao, expenseTypeDao)
     }
 
 

@@ -9,7 +9,7 @@ data class TransactionItem(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "transaction_id")
-    val transactionId: Int,
+    val transactionId: Int = 0,
 
     @ColumnInfo(name = "is_expense")
     val isExpense: Boolean,
