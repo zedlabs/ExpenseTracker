@@ -52,6 +52,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+//        view?.findNavController()?.popBackStack()
         return ComposeView(requireContext()).apply {
             setContent {
                 ExpenseTheme(

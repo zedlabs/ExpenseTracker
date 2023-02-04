@@ -39,3 +39,7 @@ fun Activity.changeStatusBarColor(color: Int, isLight: Boolean) {
     window.statusBarColor = color
     WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = isLight
 }
+
+fun Activity.changeBackgroundColor(color: Int) {
+    window.decorView.setBackgroundColor(color)
+}

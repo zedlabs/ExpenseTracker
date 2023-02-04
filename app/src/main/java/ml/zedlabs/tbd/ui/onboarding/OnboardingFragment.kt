@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -32,10 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.asStateFlow
 import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
@@ -125,13 +123,18 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    fun commitAndNavigateToHome() {
+    private fun commitAndNavigateToHome() {
         onboardingViewModel.commitCurrencyToPrefs()
         navigateToHome()
     }
 
     private fun navigateToHome() {
-        view?.findNavController()?.navigate(R.id.onb_to_home)
+        val navController = view?.findNavController()
+        val startDestination = navController?.graph?.startDestinationId ?: return
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(startDestination, inclusive = true, saveState = false)
+            .build()
+        navController.navigate(R.id.onb_to_home, null, navOptions)
     }
 
     @Composable
