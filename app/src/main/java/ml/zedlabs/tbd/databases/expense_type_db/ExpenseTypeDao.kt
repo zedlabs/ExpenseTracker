@@ -3,10 +3,7 @@ package ml.zedlabs.tbd.databases.expense_type_db
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import ml.zedlabs.data.local_db.AddedList
-import ml.zedlabs.data.local_db.WatchStatusUpdate
 
 @Dao
 interface ExpenseTypeDao {

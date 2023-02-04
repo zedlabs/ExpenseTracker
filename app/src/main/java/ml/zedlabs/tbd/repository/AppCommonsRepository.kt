@@ -7,8 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ml.zedlabs.tbd.databases.media_db.AddedListDao
-import ml.zedlabs.tbd.network.JsonApi
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import javax.inject.Inject
 
