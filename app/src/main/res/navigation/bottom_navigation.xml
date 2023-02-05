@@ -13,7 +13,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="ml.zedlabs.tbd.ui.home.HomeFragment"
-        android:label="Home" >
+        android:label="Home">
         <action
             android:id="@+id/home_to_premium"
             app:destination="@id/premium_fragment" />
@@ -25,14 +25,25 @@
             app:destination="@id/transaction_list_fragment"
             app:enterAnim="@animator/slide_in_bottom"
             app:exitAnim="@animator/no_anim"
-            app:popExitAnim="@animator/slide_out_bottom"
-            />
+            app:popExitAnim="@animator/slide_out_bottom" />
     </fragment>
 
     <fragment
         android:id="@+id/profile_fragment"
         android:name="ml.zedlabs.tbd.ui.profile.ProfileFragment"
-        android:label="Profile" />
+        android:label="Profile">
+        <action
+            android:id="@+id/profile_to_onboarding"
+            app:destination="@id/onboarding_fragment">
+            <argument
+                android:name="isFromProfile"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/profile_to_premium"
+            app:destination="@id/premium_fragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/transaction_list_fragment"
@@ -49,6 +60,10 @@
         android:id="@+id/onboarding_fragment"
         android:name="ml.zedlabs.tbd.ui.onboarding.OnboardingFragment"
         android:label="Onboarding" >
+        <argument
+            android:name="isFromProfile"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/onb_to_home"
             app:destination="@id/home_fragment" />

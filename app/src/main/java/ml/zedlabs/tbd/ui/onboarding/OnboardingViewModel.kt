@@ -23,7 +23,7 @@ class OnboardingViewModel @Inject constructor(
 ) : ViewModel() {
 
     val selectedCountryCodeState = mutableStateOf<CurrencyItem?>(null)
-    val _localCurrency = MutableStateFlow<Resource<String>>(Resource.Uninitialised())
+    private val _localCurrency = MutableStateFlow<Resource<String>>(Resource.Uninitialised())
     val localCurrency = _localCurrency.asStateFlow()
 
     init {

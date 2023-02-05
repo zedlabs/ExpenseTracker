@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavArgs
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
@@ -52,8 +56,8 @@ class OnboardingFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
-    private val onboardingRowModifier = Modifier
-        .fillMaxWidth()
+    private val onboardingRowModifier = Modifier.fillMaxWidth()
+    val args: OnboardingFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,15 +67,16 @@ class OnboardingFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
+                // need this before loading the onboarding fragment, ideally create a splash fragment
                 val currency by onboardingViewModel.localCurrency.collectAsState()
+                if (args.isFromProfile) {
+                    ShowOnboardingScreen()
+                    return@setContent
+                }
                 when (currency) {
                     is Resource.Error -> {
                         //error implies currency is not set
-                        ExpenseTheme(
-                            appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
-                        ) {
-                            Onboarding()
-                        }
+                        ShowOnboardingScreen()
                     }
 
                     is Resource.Success -> {
@@ -85,6 +90,24 @@ class OnboardingFragment : Fragment() {
                 }
             }
         }
+    }
+
+    @Composable
+    private fun ShowOnboardingScreen() {
+        ExpenseTheme(
+            appTheme = mainViewModel.appTheme.collectAsState(initial = AppThemeType.Default.name).value
+        ) {
+            Onboarding()
+        }
+    }
+
+    @Composable
+    fun EmptyFullBackground() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+        )
     }
 
     @Composable
@@ -125,7 +148,18 @@ class OnboardingFragment : Fragment() {
 
     private fun commitAndNavigateToHome() {
         onboardingViewModel.commitCurrencyToPrefs()
-        navigateToHome()
+        when (args.isFromProfile) {
+            true -> {
+                // opened from profile, need to remove the backstack
+                val navController = view?.findNavController()
+                navController?.popBackStack(R.id.home_fragment, false)
+            }
+
+            false -> {
+                // initial setup
+                navigateToHome()
+            }
+        }
     }
 
     private fun navigateToHome() {

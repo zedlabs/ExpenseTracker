@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -52,7 +53,6 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        view?.findNavController()?.popBackStack()
         return ComposeView(requireContext()).apply {
             setContent {
                 ExpenseTheme(
@@ -88,7 +88,7 @@ class HomeFragment : Fragment() {
 
     @Composable
     fun HomeTopSection() {
-        val currency = onboardingViewModel.localCurrency.collectAsState("")
+        val currency by onboardingViewModel.localCurrency.collectAsState()
         Column(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
@@ -102,7 +102,7 @@ class HomeFragment : Fragment() {
                 }
                 LargeText(text = "          The Chart tracks your spending over the past month")
                 Spacer12()
-                MediumText(text = "Your largest spend was of ${currency.value}43 on Groceries. ")
+                MediumText(text = "Your largest spend was of ${currency.data}43 on Groceries. ")
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(

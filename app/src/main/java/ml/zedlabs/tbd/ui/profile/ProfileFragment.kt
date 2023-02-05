@@ -19,16 +19,20 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ml.zedlabs.tbd.MainViewModel
+import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.base.BaseAndroidFragment
 import ml.zedlabs.tbd.ui.common.PrimaryText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.common.TitleTextH2
+import ml.zedlabs.tbd.ui.onboarding.OnboardingFragmentDirections
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 
@@ -89,30 +93,52 @@ class ProfileFragment : BaseAndroidFragment() {
                 }
                 Spacer12()
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        redirectToPremiumMspScreen()
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                PrimaryText(
-                    text = "Get Premium!\nDiscover new and exciting features!"
-                )
-                Icon(
-                    Icons.Default.KeyboardArrowRight,
-                    contentDescription = "right icons",
-                    Modifier.padding(top = 5.dp),
-                    tint = MaterialTheme.colors.onBackground
-                )
-            }
+            ProfileItemRow(
+                clickAction = ::redirectToPremiumMspScreen,
+                text = "Get Premium!\nDiscover new and exciting features!"
+            )
+            Spacer24()
+            ProfileItemRow(
+                clickAction = ::redirectToOnboarding,
+                text = "Change Currency"
+            )
         }
 
     }
 
+    @Composable
+    fun ProfileItemRow(
+        clickAction: () -> Unit,
+        text: String,
+        icon: ImageVector = Icons.Default.KeyboardArrowRight,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    clickAction.invoke()
+                },
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            PrimaryText(
+                text = text
+            )
+            Icon(
+                icon,
+                contentDescription = "right icons",
+                Modifier.padding(top = 5.dp),
+                tint = MaterialTheme.colors.onBackground
+            )
+        }
+    }
+
     private fun redirectToPremiumMspScreen() {
-        //   view?.findNavController()?.navigate(R.id.profile_to_premium)
+        view?.findNavController()?.navigate(R.id.profile_to_premium)
+    }
+
+    private fun redirectToOnboarding() {
+        val action = ProfileFragmentDirections.profileToOnboarding(true)
+        view?.findNavController()?.navigate(action)
     }
 }
 
