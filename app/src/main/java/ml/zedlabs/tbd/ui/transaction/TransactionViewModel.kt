@@ -44,6 +44,12 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun createTransaction(transactionItem: TransactionItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.addNewTransaction(transactionItem)
+        }
+    }
+
     fun deleteTransaction(transactionId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteEntry(transactionId = transactionId)
