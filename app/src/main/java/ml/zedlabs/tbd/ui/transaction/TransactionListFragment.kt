@@ -4,31 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,17 +38,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
+import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.TransactionType
 import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.LargeText
@@ -64,7 +64,7 @@ import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 class TransactionListFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val transactionViewModel: TransactionViewModel by viewModels()
+    private val transactionViewModel: TransactionViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,44 +84,43 @@ class TransactionListFragment : Fragment() {
 
     @Composable
     fun TransactionListParent(mod: Modifier = Modifier) {
+
         val addTransactionSheetState =
             rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
         val scaffoldState =
             rememberBottomSheetScaffoldState(bottomSheetState = addTransactionSheetState)
         val scope = rememberCoroutineScope()
+        LaunchedEffect(Unit) {
+            transactionViewModel.getUsersTransactions()
+        }
+        val listItems by transactionViewModel.transactionList.collectAsState()
 
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetPeekHeight = 0.dp,
+        val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+        ModalBottomSheetLayout(
+            sheetState = bottomState,
             sheetContent = {
-                AddTransactionBottomSheet()
-            },
-            modifier = mod.pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    scope.launch {
-                        addTransactionSheetState.collapse()
+            AddTransactionBottomSheet()
+        }) {
+            if (listItems is Resource.Success) {
+                LazyColumn(
+                    modifier = mod
+                        .background(color = MaterialTheme.colors.secondary)
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    item {
+                        TransactionHeaderItem(
+                            scope = scope,
+                            addTransactionSheetState = bottomState
+                        )
                     }
-                })
-            }
-        ) {
-            val listItems =
-                transactionViewModel.getUsersTransactions().collectAsState(initial = listOf()).value
-
-            LazyColumn(
-                modifier = mod
-                    .background(color = MaterialTheme.colors.secondary)
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp)
-            ) {
-                item {
-                    TransactionHeaderItem(
-                        scope = scope,
-                        addTransactionSheetState = addTransactionSheetState
-                    )
+                    items(items = listItems.data.orEmpty()) { item ->
+                        MediumText(text = "${item.type}  \n${item.transactionId}  \n${item.note}\n\n\n")
+                    }
                 }
-                items(items = listItems) { item ->
-                    MediumText(text = "${item.type}  \n${item.transactionId}  \n${item.note}\n\n\n")
-                }
+            } else {
+                Spacer(modifier = mod.height(800.dp))
             }
         }
     }
@@ -130,7 +129,7 @@ class TransactionListFragment : Fragment() {
     fun TransactionHeaderItem(
         mod: Modifier = Modifier,
         scope: CoroutineScope,
-        addTransactionSheetState: BottomSheetState
+        addTransactionSheetState: ModalBottomSheetState
     ) {
         Spacer24()
         LargeText(
@@ -144,7 +143,7 @@ class TransactionListFragment : Fragment() {
             modifier = mod.clickable {
                 // open the bottom sheet
                 scope.launch {
-                    addTransactionSheetState.expand()
+                    addTransactionSheetState.show()
                 }
             },
             color = MaterialTheme.colors.onSecondary

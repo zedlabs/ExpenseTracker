@@ -16,13 +16,13 @@ class TransactionRepository @Inject constructor(
     // can add filters for price range here
     fun getAllTransactions(
     ) =
-        transactionDao.getAll().flowOn(Dispatchers.Main)
+        transactionDao.getAll()//.flowOn(Dispatchers.Main)
 //            .map { t ->
 //                userList.map { it.asDomainModel() }
 //                .filter { if (mediaType == null) true else mediaType == it.type }
 //                .filter { if (watchStatus == null) true else watchStatus == it.watchStatus }
 //            }
-            .conflate()
+           // .conflate()
 
     // can add a return value sealed result here to indicate if the object has been inserted or not
     suspend fun addNewTransaction(item: TransactionItem) {

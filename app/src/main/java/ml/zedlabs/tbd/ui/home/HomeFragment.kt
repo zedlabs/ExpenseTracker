@@ -2,6 +2,7 @@ package ml.zedlabs.tbd.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.SurfaceControl.Transaction
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
@@ -42,11 +43,13 @@ import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.onboarding.OnboardingViewModel
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
+import ml.zedlabs.tbd.ui.transaction.TransactionViewModel
 
 class HomeFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
+//    private val transactionViewModel: TransactionViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
