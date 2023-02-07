@@ -49,7 +49,7 @@ class HomeFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
-//    private val transactionViewModel: TransactionViewModel by activityViewModels()
+    private val transactionViewModel: TransactionViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,6 +71,7 @@ class HomeFragment : Fragment() {
     fun Home() {
         Column {
             // Top 65% is red
+            val transations = transactionViewModel.transactionList.collectAsState()
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colors.background)

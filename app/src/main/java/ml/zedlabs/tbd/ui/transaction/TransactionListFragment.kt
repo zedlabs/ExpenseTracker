@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +45,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
@@ -65,6 +67,7 @@ class TransactionListFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val transactionViewModel: TransactionViewModel by activityViewModels()
+    private val transactionSubTypesChips = listOf("🍅 Groceries", "🥗 Food", "🧳 Travel", "⚡ Bills")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,17 +87,8 @@ class TransactionListFragment : Fragment() {
 
     @Composable
     fun TransactionListParent(mod: Modifier = Modifier) {
-
-        val addTransactionSheetState =
-            rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
-        val scaffoldState =
-            rememberBottomSheetScaffoldState(bottomSheetState = addTransactionSheetState)
         val scope = rememberCoroutineScope()
-        LaunchedEffect(Unit) {
-            transactionViewModel.getUsersTransactions()
-        }
         val listItems by transactionViewModel.transactionList.collectAsState()
-
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
         ModalBottomSheetLayout(
@@ -120,7 +114,12 @@ class TransactionListFragment : Fragment() {
                     }
                 }
             } else {
-                Spacer(modifier = mod.height(800.dp))
+                Spacer(
+                    modifier = mod
+                        .height(1200.dp)
+                        .background(color = MaterialTheme.colors.secondary)
+                        .fillMaxSize()
+                )
             }
         }
     }
@@ -154,19 +153,12 @@ class TransactionListFragment : Fragment() {
     @Composable
     private fun AddTransactionBottomSheet(mod: Modifier = Modifier) {
         var note by remember { mutableStateOf("") }
-        val timestamp = System.currentTimeMillis()
         val transactionType = remember { mutableStateOf("") }
-        //this list would be fetched from presaved and editable db_2
-        //should also have a color that covers the border
-        val transactionSubTypesChips = listOf("🍅 Groceries", "🥗 Food", "🧳 Travel", "⚡ Bills")
         val transactionSubType = remember { mutableStateOf("") }
 
         Column(
             modifier = mod
-                .fillMaxWidth()
-                .clickable {
-                    //doing nothing here, just to disable touch actions on the bottom sheet
-                },
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer24()
@@ -190,7 +182,7 @@ class TransactionListFragment : Fragment() {
                         transactionViewModel.createTransaction(
                             TransactionItem(
                                 isExpense = transactionType.value == TransactionType.Expense.name,
-                                timestamp = timestamp,
+                                timestamp = System.currentTimeMillis(),
                                 note = note,
                                 type = transactionSubType.value
                             )

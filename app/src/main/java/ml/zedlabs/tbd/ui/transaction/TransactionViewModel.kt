@@ -1,11 +1,13 @@
 package ml.zedlabs.tbd.ui.transaction
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,12 +27,16 @@ class TransactionViewModel @Inject constructor(
     private val _transactionList =
         MutableStateFlow<Resource<List<TransactionItem>>>(Resource.Uninitialised())
     val transactionList = _transactionList.asStateFlow()
-    fun getUsersTransactions(
+
+    init {
+        getUsersTransactions()
+    }
+    private fun getUsersTransactions(
     ) {
         viewModelScope.launch {
             repository.getAllTransactions()
                 .flowOn(Dispatchers.IO)
-                .collect {
+                .collectLatest {
                     _transactionList.value = Resource.Success(it)
                 }
         }
