@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -36,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
@@ -64,7 +67,7 @@ class TransactionListFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val transactionViewModel: TransactionViewModel by activityViewModels()
-    private val transactionSubTypesChips = listOf("🍅 Groceries", "🥗 Food", "🧳 Travel", "⚡ Bills")
+    private val transactionSubTypesChips = listOf("🍅 Groceries", "🥗 Food", "🧳 Travel", "⚡ Bills", "➕ Create")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -256,21 +259,39 @@ class TransactionListFragment : Fragment() {
                     transactionViewModel.alertDialogOpenState.value = false
                 },
                 title = {
-                    MediumText(text = "Add a Category")
+                    Column(modifier = mod.fillMaxWidth()) {
+                        MediumText(
+                            modifier = mod
+                                .align(CenterHorizontally),
+                            color = MaterialTheme.colors.onSecondary,
+                            text = "Create New Category"
+                        )
+                    }
                 },
                 text = {
                     Column {
-                        MediumText(text = "Add NAme ->")
-                        TextField(value = customCategory, onValueChange = {
-                            customCategory = it
-                        })
+                        TextField(
+                            value = customCategory,
+                            onValueChange = {
+                                customCategory = it
+                            },
+                            maxLines = 1
+                        )
                     }
                 },
                 buttons = {
-                    Button(onClick = {
-                        // save to db
-                    }) {
-                        MediumText(text = "Add Category!")
+                    Button(
+                        modifier = mod
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp, horizontal = 42.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor =
+                            MaterialTheme.colors.secondary
+                        ),
+                        onClick = {
+                            // save to db
+                        }) {
+                        MediumText(text = "Add Category!", color = MaterialTheme.colors.onSecondary)
                     }
                 }
             )
