@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.BottomSheetValue
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -24,15 +26,11 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,7 +43,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
@@ -94,9 +91,10 @@ class TransactionListFragment : Fragment() {
         ModalBottomSheetLayout(
             sheetState = bottomState,
             sheetContent = {
-            AddTransactionBottomSheet()
-        }) {
+                AddTransactionBottomSheet()
+            }) {
             if (listItems is Resource.Success) {
+                AddTransactionSubTypeDialog()
                 LazyColumn(
                     modifier = mod
                         .background(color = MaterialTheme.colors.secondary)
@@ -220,11 +218,16 @@ class TransactionListFragment : Fragment() {
 
     @Composable
     fun TransactionSubTypeChipList(chips: List<String>, transactionSubType: MutableState<String>) {
+        // get these chips from the transaction type table
         LazyRow {
-            items(chips) { currentItem ->
+            itemsIndexed(chips) { index, currentItem ->
                 Chip(
                     onClick = {
-                        transactionSubType.value = currentItem
+                        if (index == chips.lastIndex) {
+                            transactionViewModel.alertDialogOpenState.value = true
+                        } else {
+                            transactionSubType.value = currentItem
+                        }
                     },
                     border = if (transactionSubType.value == currentItem) {
                         BorderStroke(width = 1.dp, color = MaterialTheme.colors.onBackground)
@@ -240,6 +243,37 @@ class TransactionListFragment : Fragment() {
                 }
                 HSpacer12()
             }
+        }
+    }
+
+    @Composable
+    fun AddTransactionSubTypeDialog(mod: Modifier = Modifier) {
+        var customCategory by remember { mutableStateOf("") }
+        if (transactionViewModel.alertDialogOpenState.value) {
+            AlertDialog(
+                backgroundColor = MaterialTheme.colors.secondary,
+                onDismissRequest = {
+                    transactionViewModel.alertDialogOpenState.value = false
+                },
+                title = {
+                    MediumText(text = "Add a Category")
+                },
+                text = {
+                    Column {
+                        MediumText(text = "Add NAme ->")
+                        TextField(value = customCategory, onValueChange = {
+                            customCategory = it
+                        })
+                    }
+                },
+                buttons = {
+                    Button(onClick = {
+                        // save to db
+                    }) {
+                        MediumText(text = "Add Category!")
+                    }
+                }
+            )
         }
     }
 

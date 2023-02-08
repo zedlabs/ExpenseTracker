@@ -1,5 +1,7 @@
 package ml.zedlabs.tbd.ui.transaction
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +22,8 @@ import javax.inject.Inject
 class TransactionViewModel @Inject constructor(
     val repository: TransactionRepository
 ) : ViewModel() {
+
+    val alertDialogOpenState = mutableStateOf(false)
 
     val currentTransactionSelection =
         MutableStateFlow<Resource<TransactionItem>>(Resource.Uninitialised())
