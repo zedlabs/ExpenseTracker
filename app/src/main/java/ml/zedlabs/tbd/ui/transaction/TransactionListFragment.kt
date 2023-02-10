@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -29,6 +29,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,11 +37,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,6 +48,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.MainViewModel
+import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.TransactionType
@@ -66,8 +67,7 @@ import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 class TransactionListFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val transactionViewModel: TransactionViewModel by activityViewModels()
-    private val transactionSubTypesChips = listOf("🍅 Groceries", "🥗 Food", "🧳 Travel", "⚡ Bills", "➕ Create")
+    private val viewModel: TransactionViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,13 +88,13 @@ class TransactionListFragment : Fragment() {
     @Composable
     fun TransactionListParent(mod: Modifier = Modifier) {
         val scope = rememberCoroutineScope()
-        val listItems by transactionViewModel.transactionList.collectAsState()
+        val listItems by viewModel.transactionList.collectAsState()
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
         ModalBottomSheetLayout(
             sheetState = bottomState,
             sheetContent = {
-                AddTransactionBottomSheet()
+                AddTransactionBottomSheet(state = bottomState)
             }) {
             if (listItems is Resource.Success) {
                 AddTransactionSubTypeDialog()
@@ -111,7 +111,19 @@ class TransactionListFragment : Fragment() {
                         )
                     }
                     items(items = listItems.data.orEmpty()) { item ->
-                        MediumText(text = "${item.type}  \n${item.transactionId}  \n${item.note}\n\n\n")
+                        MediumText(
+                            text = "${item.type}  \n${item.transactionId}  \n${item.note}\n\n\n",
+                            modifier = mod.clickable {
+                                //update current selection
+                                viewModel.currentTransactionSelection.value =
+                                    CurrentItemState.Exists(item)
+                                setValues(item.note, item.expenseType, item.type)
+                                //show bottom sheet
+                                scope.launch {
+                                    bottomState.show()
+                                }
+                            }
+                        )
                     }
                 }
             } else {
@@ -135,13 +147,15 @@ class TransactionListFragment : Fragment() {
         LargeText(
             text = "Welcome to transaction list",
             color = MaterialTheme.colors.onSecondary,
-            modifier = mod.clickable { transactionViewModel.deleteAllFromDb() }
+            modifier = mod.clickable { viewModel.deleteAllFromDb() }
         )
         Spacer24()
         MediumText(
             text = "Add Expense / Income",
             modifier = mod.clickable {
                 // open the bottom sheet
+                viewModel.currentTransactionSelection.value = CurrentItemState.DoesNotExist
+                setValues()
                 scope.launch {
                     addTransactionSheetState.show()
                 }
@@ -150,65 +164,129 @@ class TransactionListFragment : Fragment() {
         )
     }
 
-    //sub type chip list should be sorted by popularity
-    @Composable
-    private fun AddTransactionBottomSheet(mod: Modifier = Modifier) {
-        var note by remember { mutableStateOf("") }
-        val transactionType = remember { mutableStateOf("") }
-        val transactionSubType = remember { mutableStateOf("") }
-
-        Column(
-            modifier = mod
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer24()
-            ExpenseTypeChips(
-                chips = TransactionType.values().map { it.name },
-                transactionType = transactionType
-            )
-            Spacer12()
-            TransactionSubTypeChipList(
-                chips = transactionSubTypesChips,
-                transactionSubType = transactionSubType
-            )
-            Spacer12()
-            TextField(value = note, onValueChange = {
-                note = it
-            })
-            MediumText(text = "Add Transaction",
-                color = MaterialTheme.colors.onSecondary,
-                modifier = mod
-                    .clickable {
-                        transactionViewModel.createTransaction(
-                            TransactionItem(
-                                isExpense = transactionType.value == TransactionType.Expense.name,
-                                timestamp = System.currentTimeMillis(),
-                                note = note,
-                                type = transactionSubType.value
-                            )
-                        )
-                    }
-            )
-            Spacer24()
+    private fun setValues(
+        noteValue: String = "",
+        transactionTypeValue: String = "",
+        transactionSubTypeValue: String = ""
+    ) {
+        with(viewModel) {
+            note = noteValue
+            transactionType.value = transactionTypeValue
+            transactionSubType.value = transactionSubTypeValue
         }
     }
 
+    //sub type chip list should be sorted by popularity
     @Composable
-    fun ExpenseTypeChips(chips: List<String>, transactionType: MutableState<String>) {
+    private fun AddTransactionBottomSheet(mod: Modifier = Modifier, state: ModalBottomSheetState) {
+
+//        if (state.isVisible.not()) {
+//            // does not initialise the bottom sheet on fragment open
+//            // save on initial CPU consumption
+//            Spacer(modifier = mod.height(1.dp))
+//            return
+//        }
+        val currentItem = viewModel.currentTransactionSelection.collectAsState()
+        val transactionSubTypeList = viewModel.transactionTypeList.collectAsState()
+        val ctx = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.getUsersTransactionTypes()
+        }
+
+        if (transactionSubTypeList.value is Resource.Success
+            && currentItem.value !is CurrentItemState.Loading
+        ) {
+            Column(
+                modifier = mod
+                    .fillMaxWidth(),
+                horizontalAlignment = CenterHorizontally
+            ) {
+                Spacer24()
+                ExpenseTypeChips(
+                    chips = TransactionType.values().map { it.name },
+                )
+                Spacer12()
+                TransactionSubTypeChipList(
+                    chips = transactionSubTypeList.value.data.orEmpty(),
+                )
+                Spacer12()
+                TextField(value = viewModel.note,
+                    onValueChange = {
+                        viewModel.note = it
+                    }
+                )
+                MediumText(text = "Add Transaction",
+                    color = MaterialTheme.colors.onSecondary,
+                    modifier = mod
+                        .clickable {
+                            when (currentItem.value) {
+                                CurrentItemState.DoesNotExist -> {
+                                    // create new transaction
+                                    viewModel.createTransaction(
+                                        TransactionItem(
+                                            expenseType = viewModel.transactionType.value,
+                                            timestamp = System.currentTimeMillis(),
+                                            note = viewModel.note,
+                                            type = viewModel.transactionSubType.value,
+                                            amount = 0.0
+                                        )
+                                    )
+                                }
+
+                                is CurrentItemState.Exists -> {
+                                    //update existing transaction
+                                    if (currentItem.value.transactionItem?.type == viewModel.transactionSubType.value
+                                        && currentItem.value.transactionItem?.expenseType == viewModel.transactionType.value
+                                        && currentItem.value.transactionItem?.note == viewModel.note
+                                    ) {
+                                        Toast.makeText(
+                                            ctx,
+                                            "No Changes Mode yet",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        viewModel.updateTransaction(
+                                            TransactionItem(
+                                                transactionId = currentItem.value.transactionItem?.transactionId
+                                                    ?: return@clickable,
+                                                expenseType = viewModel.transactionType.value,
+                                                timestamp = currentItem.value.transactionItem?.timestamp
+                                                    ?: return@clickable,
+                                                note = viewModel.note,
+                                                type = viewModel.transactionSubType.value,
+                                                amount = 0.0
+                                            )
+                                        )
+                                    }
+                                }
+
+                                CurrentItemState.Loading -> Unit
+                            }
+                        }
+                )
+            }
+        } else {
+            Spacer24()
+        }
+
+    }
+
+    @Composable
+    fun ExpenseTypeChips(chips: List<String>) {
         LazyRow {
             items(chips) { currentItem ->
                 Chip(
                     onClick = {
-                        transactionType.value = currentItem
+                        viewModel.transactionType.value = currentItem
                     },
-                    border = if (transactionType.value == currentItem) {
+                    border = if (viewModel.transactionType.value == currentItem) {
                         BorderStroke(width = 1.dp, color = MaterialTheme.colors.onBackground)
                     } else {
                         null
                     }
                 ) {
-                    if (transactionType.value == currentItem) {
+                    if (viewModel.transactionType.value == currentItem) {
                         PrimaryText(text = currentItem)
                     } else {
                         SecondaryText(text = currentItem)
@@ -220,29 +298,37 @@ class TransactionListFragment : Fragment() {
     }
 
     @Composable
-    fun TransactionSubTypeChipList(chips: List<String>, transactionSubType: MutableState<String>) {
+    fun TransactionSubTypeChipList(
+        chips: List<ExpenseTypeItem>
+    ) {
         // get these chips from the transaction type table
         LazyRow {
-            itemsIndexed(chips) { index, currentItem ->
+            items(chips) { currentItem ->
                 Chip(
                     onClick = {
-                        if (index == chips.lastIndex) {
-                            transactionViewModel.alertDialogOpenState.value = true
-                        } else {
-                            transactionSubType.value = currentItem
-                        }
+                        viewModel.transactionSubType.value = currentItem.type
                     },
-                    border = if (transactionSubType.value == currentItem) {
+                    border = if (viewModel.transactionSubType.value == currentItem.type) {
                         BorderStroke(width = 1.dp, color = MaterialTheme.colors.onBackground)
                     } else {
                         null
                     }
                 ) {
-                    if (transactionSubType.value == currentItem) {
-                        PrimaryText(text = currentItem)
+                    if (viewModel.transactionSubType.value == currentItem.type) {
+                        PrimaryText(text = currentItem.type)
                     } else {
-                        SecondaryText(text = currentItem)
+                        SecondaryText(text = currentItem.type)
                     }
+                }
+                HSpacer12()
+            }
+            item {
+                Chip(
+                    onClick = {
+                        viewModel.addTypeDialogState.value = true
+                    }
+                ) {
+                    PrimaryText(text = "➕ Add Type")
                 }
                 HSpacer12()
             }
@@ -252,11 +338,11 @@ class TransactionListFragment : Fragment() {
     @Composable
     fun AddTransactionSubTypeDialog(mod: Modifier = Modifier) {
         var customCategory by remember { mutableStateOf("") }
-        if (transactionViewModel.alertDialogOpenState.value) {
+        if (viewModel.addTypeDialogState.value) {
             AlertDialog(
                 backgroundColor = MaterialTheme.colors.secondary,
                 onDismissRequest = {
-                    transactionViewModel.alertDialogOpenState.value = false
+                    viewModel.addTypeDialogState.value = false
                 },
                 title = {
                     Column(modifier = mod.fillMaxWidth()) {
@@ -290,6 +376,8 @@ class TransactionListFragment : Fragment() {
                         ),
                         onClick = {
                             // save to db
+                            viewModel.createNewTag(customCategory)
+                            viewModel.addTypeDialogState.value = false
                         }) {
                         MediumText(text = "Add Category!", color = MaterialTheme.colors.onSecondary)
                     }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeDao
+import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionDao
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import javax.inject.Inject
@@ -14,20 +15,15 @@ class TransactionRepository @Inject constructor(
 ) {
 
     // can add filters for price range here
-    fun getAllTransactions(
-    ) =
-        transactionDao.getAll()//.flowOn(Dispatchers.Main)
-//            .map { t ->
-//                userList.map { it.asDomainModel() }
-//                .filter { if (mediaType == null) true else mediaType == it.type }
-//                .filter { if (watchStatus == null) true else watchStatus == it.watchStatus }
-//            }
-           // .conflate()
+    fun getAllTransactions() = transactionDao.getAll()
 
-    // can add a return value sealed result here to indicate if the object has been inserted or not
+    fun getAllTags() = expenseTypeDao.getAll()
     suspend fun addNewTransaction(item: TransactionItem) {
-        // return as item already exists
         transactionDao.insertAll(item)
+    }
+
+    suspend fun updateTransaction(item: TransactionItem) {
+        transactionDao.update(item)
     }
 
     suspend fun getItemByTransactionId(transactionId: Int): TransactionItem? {
@@ -40,6 +36,10 @@ class TransactionRepository @Inject constructor(
 
     suspend fun deleteAll() {
         transactionDao.deleteAll()
+    }
+
+    suspend fun createNewTag(item: ExpenseTypeItem) {
+        expenseTypeDao.insertAll(item)
     }
 
 //    suspend fun updateWatchStatus(update: WatchStatusUpdate) {

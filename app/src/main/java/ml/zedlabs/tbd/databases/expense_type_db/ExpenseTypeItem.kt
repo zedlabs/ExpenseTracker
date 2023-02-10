@@ -9,11 +9,11 @@ data class ExpenseTypeItem(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "type_id")
-    val typeId: Int,
+    val typeId: Int = 0,
 
     @ColumnInfo(name = "type")
     val type: String,
 
     @ColumnInfo(name = "dot_color")
-    val dotColor: String
+        val dotColor: String
 )

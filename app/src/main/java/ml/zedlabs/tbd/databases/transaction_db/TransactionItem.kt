@@ -11,8 +11,8 @@ data class TransactionItem(
     @ColumnInfo(name = "transaction_id")
     val transactionId: Int = 0,
 
-    @ColumnInfo(name = "is_expense")
-    val isExpense: Boolean,
+    @ColumnInfo(name = "expenseType")
+    val expenseType: String,
 
     //long ms time, not actual java timestamp
     @ColumnInfo(name = "timestamp")
@@ -23,4 +23,7 @@ data class TransactionItem(
 
     @ColumnInfo(name = "type")
     val type: String,
+
+    @ColumnInfo(name = "amount")
+    val amount: Double,
 )
