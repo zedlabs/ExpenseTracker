@@ -25,5 +25,5 @@ data class TransactionItem(
     val type: String,
 
     @ColumnInfo(name = "amount")
-    val amount: Double,
+    val amount: String,
 )

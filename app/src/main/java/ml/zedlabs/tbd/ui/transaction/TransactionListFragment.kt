@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -41,6 +42,8 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -61,6 +64,7 @@ import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
+import ml.zedlabs.tbd.util.showToast
 
 @OptIn(ExperimentalMaterialApi::class)
 @AndroidEntryPoint
@@ -112,12 +116,12 @@ class TransactionListFragment : Fragment() {
                     }
                     items(items = listItems.data.orEmpty()) { item ->
                         MediumText(
-                            text = "${item.type}  \n${item.transactionId}  \n${item.note}\n\n\n",
+                            text = "Type-> ${item.type}  \nAmount-> ${item.amount}  \nNote-> ${item.note}\n-----------------------",
                             modifier = mod.clickable {
                                 //update current selection
                                 viewModel.currentTransactionSelection.value =
                                     CurrentItemState.Exists(item)
-                                setValues(item.note, item.expenseType, item.type)
+                                setValues(item.note, item.expenseType, item.type, item.amount.toString())
                                 //show bottom sheet
                                 scope.launch {
                                     bottomState.show()
@@ -167,9 +171,11 @@ class TransactionListFragment : Fragment() {
     private fun setValues(
         noteValue: String = "",
         transactionTypeValue: String = "",
-        transactionSubTypeValue: String = ""
+        transactionSubTypeValue: String = "",
+        amountValue: String = ""
     ) {
         with(viewModel) {
+            amount = amountValue
             note = noteValue
             transactionType.value = transactionTypeValue
             transactionSubType.value = transactionSubTypeValue
@@ -216,6 +222,21 @@ class TransactionListFragment : Fragment() {
                         viewModel.note = it
                     }
                 )
+                TextField(
+                    value = viewModel.amount,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    onValueChange = {
+                        try {
+                            viewModel.amount = it
+                        } catch (exception: NumberFormatException) {
+                            ctx.showToast("Unable to parse as double")
+                        }
+
+                    }
+                )
                 MediumText(text = "Add Transaction",
                     color = MaterialTheme.colors.onSecondary,
                     modifier = mod
@@ -229,7 +250,7 @@ class TransactionListFragment : Fragment() {
                                             timestamp = System.currentTimeMillis(),
                                             note = viewModel.note,
                                             type = viewModel.transactionSubType.value,
-                                            amount = 0.0
+                                            amount = viewModel.amount
                                         )
                                     )
                                 }
@@ -239,12 +260,9 @@ class TransactionListFragment : Fragment() {
                                     if (currentItem.value.transactionItem?.type == viewModel.transactionSubType.value
                                         && currentItem.value.transactionItem?.expenseType == viewModel.transactionType.value
                                         && currentItem.value.transactionItem?.note == viewModel.note
+                                        && currentItem.value.transactionItem?.amount == viewModel.amount
                                     ) {
-                                        Toast.makeText(
-                                            ctx,
-                                            "No Changes Mode yet",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        ctx.showToast("No Changes Made yet")
                                     } else {
                                         viewModel.updateTransaction(
                                             TransactionItem(
@@ -255,7 +273,7 @@ class TransactionListFragment : Fragment() {
                                                     ?: return@clickable,
                                                 note = viewModel.note,
                                                 type = viewModel.transactionSubType.value,
-                                                amount = 0.0
+                                                amount = viewModel.amount
                                             )
                                         )
                                     }

@@ -30,6 +30,7 @@ class TransactionViewModel @Inject constructor(
     val addTypeDialogState = mutableStateOf(false)
     val currentTransactionSelection = MutableStateFlow<CurrentItemState>(CurrentItemState.DoesNotExist)
     var note by mutableStateOf("")
+    var amount by mutableStateOf("")
     val transactionType = mutableStateOf("")
     val transactionSubType = mutableStateOf("")
 
