@@ -1,5 +1,6 @@
 package ml.zedlabs.tbd.ui.transaction
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,9 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -102,6 +105,8 @@ class TransactionListFragment : Fragment() {
             }) {
             if (listItems is Resource.Success) {
                 AddTransactionSubTypeDialog()
+                MonthSelectionDialog()
+                YearSelectionDialog()
                 LazyColumn(
                     modifier = mod
                         .background(color = MaterialTheme.colors.secondary)
@@ -121,7 +126,12 @@ class TransactionListFragment : Fragment() {
                                 //update current selection
                                 viewModel.currentTransactionSelection.value =
                                     CurrentItemState.Exists(item)
-                                setValues(item.note, item.expenseType, item.type, item.amount.toString())
+                                setValues(
+                                    item.note,
+                                    item.expenseType,
+                                    item.type,
+                                    item.amount.toString()
+                                )
                                 //show bottom sheet
                                 scope.launch {
                                     bottomState.show()
@@ -142,6 +152,57 @@ class TransactionListFragment : Fragment() {
     }
 
     @Composable
+    fun MonthSelectionDialog(mod: Modifier = Modifier, context: Context = LocalContext.current) {
+        if (viewModel.monthSelectionDialogState.value) {
+            Column {
+                listOf(
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ).forEach {
+                    MediumText(text = it, modifier = mod.clickable {
+                        context.showToast(it)
+                        viewModel.selectedMonth.value = it
+                        viewModel.monthSelectionDialogState.value = false
+                    })
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun YearSelectionDialog(mod: Modifier = Modifier, context: Context = LocalContext.current) {
+        if (viewModel.yearSelectionDialogState.value) {
+            Column {
+                listOf(
+                    "2018",
+                    "2019",
+                    "2020",
+                    "2021",
+                    "2022",
+                    "2023",
+                    "2024",
+                ).forEach {
+                    MediumText(text = it, modifier = mod.clickable {
+                        context.showToast(it)
+                        viewModel.selectedYear.value = it
+                        viewModel.yearSelectionDialogState.value = false
+                    })
+                }
+            }
+        }
+    }
+
+    @Composable
     fun TransactionHeaderItem(
         mod: Modifier = Modifier,
         scope: CoroutineScope,
@@ -153,6 +214,25 @@ class TransactionListFragment : Fragment() {
             color = MaterialTheme.colors.onSecondary,
             modifier = mod.clickable { viewModel.deleteAllFromDb() }
         )
+        Spacer24()
+        Row(
+            modifier = mod.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            MediumText(
+                text = "Select Month",
+                modifier = mod.clickable {
+                    viewModel.monthSelectionDialogState.value = true
+                }
+            )
+            MediumText(
+                text = "Select Year",
+                modifier = mod.clickable {
+                    viewModel.yearSelectionDialogState.value = true
+                }
+            )
+        }
+
         Spacer24()
         MediumText(
             text = "Add Expense / Income",
@@ -166,6 +246,7 @@ class TransactionListFragment : Fragment() {
             },
             color = MaterialTheme.colors.onSecondary
         )
+        Spacer24()
     }
 
     private fun setValues(

@@ -28,11 +28,16 @@ class TransactionViewModel @Inject constructor(
 ) : ViewModel() {
 
     val addTypeDialogState = mutableStateOf(false)
+    val monthSelectionDialogState = mutableStateOf(false)
+    val yearSelectionDialogState = mutableStateOf(false)
     val currentTransactionSelection = MutableStateFlow<CurrentItemState>(CurrentItemState.DoesNotExist)
     var note by mutableStateOf("")
     var amount by mutableStateOf("")
     val transactionType = mutableStateOf("")
     val transactionSubType = mutableStateOf("")
+
+    val selectedYear = mutableStateOf("")
+    val selectedMonth = mutableStateOf("")
 
     private val _transactionList =
         MutableStateFlow<Resource<List<TransactionItem>>>(Resource.Uninitialised())
