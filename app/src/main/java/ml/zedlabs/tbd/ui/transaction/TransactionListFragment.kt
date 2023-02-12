@@ -154,51 +154,93 @@ class TransactionListFragment : Fragment() {
     @Composable
     fun MonthSelectionDialog(mod: Modifier = Modifier, context: Context = LocalContext.current) {
         if (viewModel.monthSelectionDialogState.value) {
-            Column {
-                listOf(
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December"
-                ).forEach {
-                    MediumText(text = it, modifier = mod.clickable {
-                        context.showToast(it)
-                        viewModel.selectedMonth.value = it
-                        viewModel.monthSelectionDialogState.value = false
-                    })
+            AlertDialog(
+                backgroundColor = MaterialTheme.colors.secondary,
+                onDismissRequest = {
+                    viewModel.monthSelectionDialogState.value = false
+                },
+                title = {
+                    Column(modifier = mod.fillMaxWidth()) {
+                        MediumText(
+                            modifier = mod
+                                .align(CenterHorizontally),
+                            color = MaterialTheme.colors.onSecondary,
+                            text = "Select Month"
+                        )
+                    }
+                },
+                text = {
+                    Column {
+                        listOf(
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December"
+                        ).forEach {
+                            MediumText(text = it, modifier = mod.clickable {
+                                context.showToast(it)
+                                viewModel.selectedMonth.value = it
+                                viewModel.monthSelectionDialogState.value = false
+                            })
+                        }
+                    }
+                },
+                buttons = {
+                    // no button needed
                 }
-            }
+            )
         }
     }
 
     @Composable
     fun YearSelectionDialog(mod: Modifier = Modifier, context: Context = LocalContext.current) {
         if (viewModel.yearSelectionDialogState.value) {
-            Column {
-                listOf(
-                    "2018",
-                    "2019",
-                    "2020",
-                    "2021",
-                    "2022",
-                    "2023",
-                    "2024",
-                ).forEach {
-                    MediumText(text = it, modifier = mod.clickable {
-                        context.showToast(it)
-                        viewModel.selectedYear.value = it
-                        viewModel.yearSelectionDialogState.value = false
-                    })
+            AlertDialog(
+                backgroundColor = MaterialTheme.colors.secondary,
+                onDismissRequest = {
+                    viewModel.yearSelectionDialogState.value
+                },
+                title = {
+                    Column(modifier = mod.fillMaxWidth()) {
+                        MediumText(
+                            modifier = mod
+                                .align(CenterHorizontally),
+                            color = MaterialTheme.colors.onSecondary,
+                            text = "Select year"
+                        )
+                    }
+                },
+                text = {
+                    Column {
+                        listOf(
+                            "2018",
+                            "2019",
+                            "2020",
+                            "2021",
+                            "2022",
+                            "2023",
+                            "2024",
+                        ).forEach {
+                            MediumText(text = it, modifier = mod.clickable {
+                                context.showToast(it)
+                                viewModel.selectedYear.value = it
+                                viewModel.yearSelectionDialogState.value = false
+                            })
+                        }
+                    }
+                },
+                buttons = {
+                    // no buttons needed RM
                 }
-            }
+            )
         }
     }
 
