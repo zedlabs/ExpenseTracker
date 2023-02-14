@@ -206,7 +206,7 @@ class TransactionListFragment : Fragment() {
             AlertDialog(
                 backgroundColor = MaterialTheme.colors.secondary,
                 onDismissRequest = {
-                    viewModel.yearSelectionDialogState.value
+                    viewModel.yearSelectionDialogState.value = false
                 },
                 title = {
                     Column(modifier = mod.fillMaxWidth()) {
