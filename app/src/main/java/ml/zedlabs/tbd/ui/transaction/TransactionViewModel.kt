@@ -20,6 +20,7 @@ import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.repository.TransactionRepository
 import ml.zedlabs.tbd.util.Constants.randomColors
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +31,8 @@ class TransactionViewModel @Inject constructor(
     val addTypeDialogState = mutableStateOf(false)
     val monthSelectionDialogState = mutableStateOf(false)
     val yearSelectionDialogState = mutableStateOf(false)
-    val currentTransactionSelection = MutableStateFlow<CurrentItemState>(CurrentItemState.DoesNotExist)
+    val currentTransactionSelection =
+        MutableStateFlow<CurrentItemState>(CurrentItemState.DoesNotExist)
     var note by mutableStateOf("")
     var amount by mutableStateOf("")
     val transactionType = mutableStateOf("")
@@ -140,10 +142,52 @@ class TransactionViewModel @Inject constructor(
 //        }
 //    }
 
+    private fun getDayFromTimestamp(timestamp: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
+            Calendar.SUNDAY -> "Sun"
+            Calendar.MONDAY -> "Mon"
+            Calendar.TUESDAY -> "Tue"
+            Calendar.WEDNESDAY -> "Wed"
+            Calendar.THURSDAY -> "Thu"
+            Calendar.FRIDAY -> "Fri"
+            Calendar.SATURDAY -> "Sat"
+            else -> "Inv. day"
+        }
+    }
+
+    private fun getMonthFromTimestamp(timestamp: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        return when (calendar.get(Calendar.MONTH)) {
+            Calendar.JANUARY -> "January"
+            Calendar.FEBRUARY -> "February"
+            Calendar.MARCH -> "March"
+            Calendar.APRIL -> "April"
+            Calendar.MAY -> "May"
+            Calendar.JUNE -> "June"
+            Calendar.JULY -> "July"
+            Calendar.AUGUST -> "August"
+            Calendar.SEPTEMBER -> "September"
+            Calendar.OCTOBER -> "October"
+            Calendar.NOVEMBER -> "November"
+            Calendar.DECEMBER -> "December"
+            else -> "Inv. Month"
+        }
+    }
+
+    private fun getPastSixYearsList(timestamp: Long): String {
+        val year = Calendar.getInstance().get(Calendar.YEAR)
+        return year.toString()
+    }
+
 }
 
 sealed class CurrentItemState(val transactionItem: TransactionItem?) {
-    class Exists(transactionItem: TransactionItem) : CurrentItemState(transactionItem = transactionItem)
+    class Exists(transactionItem: TransactionItem) :
+        CurrentItemState(transactionItem = transactionItem)
+
     object DoesNotExist : CurrentItemState(transactionItem = null)
     object Loading : CurrentItemState(transactionItem = null)
 }
