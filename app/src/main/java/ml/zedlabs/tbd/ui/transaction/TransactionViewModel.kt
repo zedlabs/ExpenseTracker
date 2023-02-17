@@ -236,7 +236,7 @@ class TransactionViewModel @Inject constructor(
         val dateFormatArray = mutableListOf<String>()
         dateFormatArray.add(0, getFormattedIntegerDateFromTimeStamp(today))
         val tfHrsInMs = 24 * 60 * 60 * 1000 // 1 day in ms
-        for (i in 1..9) {
+        for (i in 1..6) {
             dateFormatArray.add(
                 i,
                 getFormattedIntegerDateFromTimeStamp(today.minus(i.times(tfHrsInMs)))
@@ -252,7 +252,7 @@ class TransactionViewModel @Inject constructor(
     private fun getChartFormattedDate(date: String): String {
         val df = SimpleDateFormat("MMddyyyy")
         val newDate = df.parse(date)
-        return SimpleDateFormat("dd-MMMM").format(newDate)
+        return SimpleDateFormat("dd/MM").format(newDate)
     }
 
 }
