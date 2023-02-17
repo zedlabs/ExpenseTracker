@@ -107,6 +107,7 @@ class HomeFragment : Fragment() {
                 LargeText(text = "          The Chart tracks your spending over the past month")
                 Spacer12()
                 MediumText(text = "Your largest spend was of ${currency.data}43 on Groceries. ")
+                LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(

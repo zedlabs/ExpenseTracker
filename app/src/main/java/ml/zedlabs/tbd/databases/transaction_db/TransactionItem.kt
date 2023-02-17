@@ -26,4 +26,7 @@ data class TransactionItem(
 
     @ColumnInfo(name = "amount")
     val amount: String,
+
+    @ColumnInfo(name = "date")
+    val date: String,
 )

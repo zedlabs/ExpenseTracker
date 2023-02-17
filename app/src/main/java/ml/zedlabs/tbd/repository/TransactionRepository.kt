@@ -42,6 +42,10 @@ class TransactionRepository @Inject constructor(
         expenseTypeDao.insertAll(item)
     }
 
+    suspend fun getByDate(date: String): List<TransactionItem>? {
+        return transactionDao.getByDate(date)
+    }
+
 //    suspend fun updateWatchStatus(update: WatchStatusUpdate) {
 //        addedListDao.update(
 //            ml.zedlabs.data.local_db.WatchStatusUpdate(

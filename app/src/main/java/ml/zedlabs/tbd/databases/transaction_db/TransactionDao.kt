@@ -28,4 +28,7 @@ interface TransactionDao {
 
     @Update(entity = TransactionItem::class)
     suspend fun update(obj: TransactionItem)
+
+    @Query("SELECT * FROM transactionitem WHERE date = :date")
+    suspend fun getByDate(date: String): List<TransactionItem>?
 }

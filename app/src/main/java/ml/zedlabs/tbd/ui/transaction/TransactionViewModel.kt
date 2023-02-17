@@ -22,7 +22,9 @@ import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.repository.TransactionRepository
 import ml.zedlabs.tbd.util.Constants.randomColors
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,7 +53,10 @@ class TransactionViewModel @Inject constructor(
         MutableStateFlow<Resource<List<ExpenseTypeItem>>>(Resource.Uninitialised())
     val transactionTypeList = _transactionTypeList.asStateFlow()
 
+    val lastTenDayTransactionPairs = mutableStateOf<List<Pair<String, Double>>>(listOf())
+
     init {
+        getTransactionPairsForLastTenDays()
         getUsersTransactions()
     }
 
@@ -205,6 +210,49 @@ class TransactionViewModel @Inject constructor(
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = timestamp
         return calendar.get(Calendar.YEAR).toString()
+    }
+
+    private fun getTransactionPairsForLastTenDays() {
+        viewModelScope.launch {
+            val list = mutableListOf<Pair<String, Double>>()
+            getLastTenDaysAsIntArray().forEach { element ->
+                var sum = 0.0
+                repository.getByDate(element)?.forEach {
+                    val amount: Double = try {
+                        it.amount.toDouble()
+                    } catch (exception: Exception) {
+                        0.0
+                    }
+                    sum += amount
+                }
+                list.add(Pair(getChartFormattedDate(element), sum))
+            }
+            lastTenDayTransactionPairs.value = list
+        }
+    }
+
+    fun getLastTenDaysAsIntArray(): List<String> {
+        val today = System.currentTimeMillis()
+        val dateFormatArray = mutableListOf<String>()
+        dateFormatArray.add(0, getFormattedIntegerDateFromTimeStamp(today))
+        val tfHrsInMs = 24 * 60 * 60 * 1000 // 1 day in ms
+        for (i in 1..9) {
+            dateFormatArray.add(
+                i,
+                getFormattedIntegerDateFromTimeStamp(today.minus(i.times(tfHrsInMs)))
+            )
+        }
+        return dateFormatArray.asReversed()
+    }
+
+    fun getFormattedIntegerDateFromTimeStamp(timestamp: Long): String {
+        return SimpleDateFormat("MMddyyyy").format(Date(timestamp))
+    }
+
+    private fun getChartFormattedDate(date: String): String {
+        val df = SimpleDateFormat("MMddyyyy")
+        val newDate = df.parse(date)
+        return SimpleDateFormat("dd-MMMM").format(newDate)
     }
 
 }

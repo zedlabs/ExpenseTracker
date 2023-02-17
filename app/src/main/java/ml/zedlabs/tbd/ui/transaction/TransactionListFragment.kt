@@ -361,14 +361,16 @@ class TransactionListFragment : Fragment() {
                         .clickable {
                             when (currentItem.value) {
                                 CurrentItemState.DoesNotExist -> {
+                                    val ts = System.currentTimeMillis()
                                     // create new transaction
                                     viewModel.createTransaction(
                                         TransactionItem(
                                             expenseType = viewModel.transactionType.value,
-                                            timestamp = System.currentTimeMillis(),
+                                            timestamp = ts,
                                             note = viewModel.note,
                                             type = viewModel.transactionSubType.value,
-                                            amount = viewModel.amount
+                                            amount = viewModel.amount,
+                                            date = viewModel.getFormattedIntegerDateFromTimeStamp(ts)
                                         )
                                     )
                                 }
@@ -391,7 +393,9 @@ class TransactionListFragment : Fragment() {
                                                     ?: return@clickable,
                                                 note = viewModel.note,
                                                 type = viewModel.transactionSubType.value,
-                                                amount = viewModel.amount
+                                                amount = viewModel.amount,
+                                                date = currentItem.value.transactionItem?.date
+                                                    ?: return@clickable
                                             )
                                         )
                                     }
