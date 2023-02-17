@@ -12,7 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
@@ -38,8 +40,8 @@ class TransactionViewModel @Inject constructor(
     val transactionType = mutableStateOf("")
     val transactionSubType = mutableStateOf("")
 
-    val selectedYear = mutableStateOf("")
-    val selectedMonth = mutableStateOf("")
+    val selectedYear = mutableStateOf<String?>(getYearFromTimestamp(System.currentTimeMillis()))
+    val selectedMonth = mutableStateOf<String?>(getMonthFromTimestamp(System.currentTimeMillis()))
 
     private val _transactionList =
         MutableStateFlow<Resource<List<TransactionItem>>>(Resource.Uninitialised())
@@ -53,10 +55,22 @@ class TransactionViewModel @Inject constructor(
         getUsersTransactions()
     }
 
-    private fun getUsersTransactions() {
+    fun getUsersTransactions() {
         viewModelScope.launch {
-            repository.getAllTransactions()
-                .flowOn(Dispatchers.IO)
+            repository.getAllTransactions().map {
+                it.filter { item ->
+                    if (selectedYear.value == null)
+                        true
+                    else
+                        selectedYear.value == getYearFromTimestamp(item.timestamp)
+                }.filter { item ->
+                    if (selectedMonth.value == null)
+                        true
+                    else
+                        selectedMonth.value == getMonthFromTimestamp(item.timestamp)
+                }
+            }
+                .flowOn(Dispatchers.Main)
                 .collectLatest {
                     _transactionList.value = Resource.Success(it)
                 }
@@ -177,9 +191,19 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun getPastSixYearsList(timestamp: Long): String {
+    val pastSixYearsList: List<String> by lazy {
         val year = Calendar.getInstance().get(Calendar.YEAR)
-        return year.toString()
+        val yearList = mutableListOf<String>()
+        (0..5).forEach {
+            yearList.add(it, year.minus(it).toString())
+        }
+        yearList
+    }
+
+    fun getYearFromTimestamp(timestamp: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        return calendar.get(Calendar.YEAR).toString()
     }
 
 }

@@ -188,6 +188,7 @@ class TransactionListFragment : Fragment() {
                             MediumText(text = it, modifier = mod.clickable {
                                 context.showToast(it)
                                 viewModel.selectedMonth.value = it
+                                viewModel.getUsersTransactions()
                                 viewModel.monthSelectionDialogState.value = false
                             })
                         }
@@ -220,18 +221,11 @@ class TransactionListFragment : Fragment() {
                 },
                 text = {
                     Column {
-                        listOf(
-                            "2018",
-                            "2019",
-                            "2020",
-                            "2021",
-                            "2022",
-                            "2023",
-                            "2024",
-                        ).forEach {
+                        viewModel.pastSixYearsList.forEach {
                             MediumText(text = it, modifier = mod.clickable {
                                 context.showToast(it)
                                 viewModel.selectedYear.value = it
+                                viewModel.getUsersTransactions()
                                 viewModel.yearSelectionDialogState.value = false
                             })
                         }
