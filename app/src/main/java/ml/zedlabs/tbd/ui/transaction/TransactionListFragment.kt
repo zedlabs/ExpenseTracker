@@ -172,6 +172,7 @@ class TransactionListFragment : Fragment() {
                 text = {
                     Column {
                         listOf(
+                            "All",
                             "January",
                             "February",
                             "March",
@@ -187,7 +188,7 @@ class TransactionListFragment : Fragment() {
                         ).forEach {
                             MediumText(text = it, modifier = mod.clickable {
                                 context.showToast(it)
-                                viewModel.selectedMonth.value = it
+                                viewModel.selectedMonth.value = if (it == "All") null else it
                                 viewModel.getUsersTransactions()
                                 viewModel.monthSelectionDialogState.value = false
                             })
@@ -224,7 +225,7 @@ class TransactionListFragment : Fragment() {
                         viewModel.pastSixYearsList.forEach {
                             MediumText(text = it, modifier = mod.clickable {
                                 context.showToast(it)
-                                viewModel.selectedYear.value = it
+                                viewModel.selectedYear.value = if (it == "All") null else it
                                 viewModel.getUsersTransactions()
                                 viewModel.yearSelectionDialogState.value = false
                             })

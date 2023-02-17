@@ -194,8 +194,9 @@ class TransactionViewModel @Inject constructor(
     val pastSixYearsList: List<String> by lazy {
         val year = Calendar.getInstance().get(Calendar.YEAR)
         val yearList = mutableListOf<String>()
+        yearList.add(0, "All")
         (0..5).forEach {
-            yearList.add(it, year.minus(it).toString())
+            yearList.add(it + 1, year.minus(it).toString())
         }
         yearList
     }
