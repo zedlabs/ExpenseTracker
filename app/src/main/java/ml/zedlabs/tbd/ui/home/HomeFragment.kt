@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -104,10 +105,12 @@ class HomeFragment : Fragment() {
                 DefaultTopButton(imageVector = Icons.Rounded.Person) {
                     redirectToProfile()
                 }
-                LargeText(text = "          The Chart tracks your spending over the past month")
+                LargeText(text = "          This chart tracks your expenses over the past week.")
                 Spacer12()
-                MediumText(text = "Your largest spend was of ${currency.data}43 on Groceries. ")
+                MediumText(text = "Your largest expense was of ${currency.data}43 on Groceries & Milk", maxLines = 2, overflow = TextOverflow.Ellipsis)
+
                 LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
+                Spacer12()
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -136,7 +139,6 @@ class HomeFragment : Fragment() {
                     )
                 }
                 Spacer24()
-                Spacer12()
             }
 
         }

@@ -74,32 +74,32 @@ fun LastTenDaysSpendChart(
     ProvideChartStyle(rememberChartStyle(chartColors)) {
         val lineChart = lineChart()
         Chart(
-            modifier = Modifier.padding(horizontal = 12.dp),
             chart = lineChart,
             chartModelProducer = ChartEntryModelProducer(entryModelExpenses),
             startAxis = startAxis,
             bottomAxis = bottomAxis,
             marker = markerComponent(
-                label = textComponent(),
+                label = textComponent(
+                    typeface = Typeface.MONOSPACE,
+                    textSize = 11.sp
+                ),
                 indicator = OverlayingComponent(
                     outer = ShapeComponent(
                         shape = pillShape,
-                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.3f)
-                            .hashCode()
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f).toArgb()
                     ),
                     innerPaddingAllDp = 10f,
                     inner = OverlayingComponent(
                         outer = ShapeComponent(shape = pillShape),
                         inner = ShapeComponent(
                             shape = pillShape,
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
-                                .hashCode()
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.8f).toArgb()
                         ),
                         innerPaddingAllDp = 5f,
                     ),
                 ),
                 guideline = LineComponent(
-                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.3f).hashCode(),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f).hashCode(),
                     thicknessDp = 2f,
                     shape = DashedShape(
                         shape = pillShape,

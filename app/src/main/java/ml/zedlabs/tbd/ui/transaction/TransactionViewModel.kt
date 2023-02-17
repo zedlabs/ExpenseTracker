@@ -227,6 +227,8 @@ class TransactionViewModel @Inject constructor(
                 }
                 list.add(Pair(getChartFormattedDate(element), sum))
             }
+            list.add(0, Pair("", 0.0))
+            list.add(list.lastIndex + 1, Pair("", 0.0))
             lastTenDayTransactionPairs.value = list
         }
     }
