@@ -51,9 +51,17 @@ class TransactionViewModel @Inject constructor(
     val transactionTypeList = _transactionTypeList.asStateFlow()
 
     val lastTenDayTransactionPairs = mutableStateOf<List<Pair<String, Double>>>(listOf())
+    val largestExpensePastWeek = mutableStateOf<TransactionItem?>(null)
 
     init {
         getUsersTransactions()
+        getLargestTransaction()
+    }
+
+    private fun getLargestTransaction() {
+        viewModelScope.launch {
+
+        }
     }
 
     fun getUsersTransactions() {
@@ -211,6 +219,8 @@ class TransactionViewModel @Inject constructor(
     fun getTransactionPairsForLastWeek() {
         viewModelScope.launch {
             val list = mutableListOf<Pair<String, Double>>()
+            var largestExpense = 0.0
+            var largestExpenseItem: TransactionItem? = null
             getLastWeekAsIntArray().forEach { element ->
                 var sum = 0.0
                 repository.getByDate(element)?.filter {
@@ -221,10 +231,15 @@ class TransactionViewModel @Inject constructor(
                     } catch (exception: Exception) {
                         0.0
                     }
+                    if(amount > largestExpense) {
+                        largestExpense = amount
+                        largestExpenseItem = it
+                    }
                     sum += amount
                 }
                 list.add(Pair(getChartFormattedDate(element), sum))
             }
+            largestExpensePastWeek.value = largestExpenseItem
             list.add(0, Pair("", 0.0))
             list.add(list.lastIndex + 1, Pair("", 0.0))
             lastTenDayTransactionPairs.value = list

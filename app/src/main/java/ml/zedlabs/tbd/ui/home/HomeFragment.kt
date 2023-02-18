@@ -115,6 +115,7 @@ class HomeFragment : Fragment() {
     @Composable
     fun HomeTopSection() {
         val currency by onboardingViewModel.localCurrency.collectAsState()
+        val largestTransactionPastWeek = transactionViewModel.largestExpensePastWeek.value
         Column(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
@@ -129,7 +130,7 @@ class HomeFragment : Fragment() {
                 LargeText(text = "          This chart tracks your expenses over the past week.")
                 Spacer12()
                 MediumText(
-                    text = "Your largest expense was of ${currency.data}43 on Groceries & Milk",
+                    text = "Your largest expense was of ${currency.data}${largestTransactionPastWeek?.amount} on ${largestTransactionPastWeek?.type}",
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
