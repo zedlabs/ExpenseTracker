@@ -62,6 +62,7 @@ class HomeFragment : Fragment() {
     private val rowModifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 6.dp)
+
     override fun onResume() {
         super.onResume()
         transactionViewModel.getTransactionPairsForLastWeek()
@@ -174,13 +175,43 @@ class HomeFragment : Fragment() {
                     .padding(horizontal = 12.dp)
             ) {
                 item {
-                    MediumText(
-                        modifier = Modifier.padding(vertical = 24.dp),
-                        fontSize = 22.sp,
-                        text = "Last 5 Transactions 💸",
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colors.onSecondary
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        MediumText(
+                            modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
+                            fontSize = 22.sp,
+                            text = "Last 5 Transactions 💸",
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colors.onSecondary
+                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 24.dp, bottom = 12.dp)
+                                .background(MaterialTheme.colors.onSecondary)
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .clickable {
+                                    redirectToTransactionList()
+                                }
+                        ) {
+                            MediumText(
+                                text = "All",
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 14.sp
+                            )
+                            HSpacer12()
+                            Icon(
+                                imageVector = Icons.Rounded.ArrowForward,
+                                tint = MaterialTheme.colors.primary,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .rotate(45f),
+                                contentDescription = "Add expense screen redirect button"
+                            )
+                        }
+                    }
+
                 }
                 items(items = tl.data.orEmpty().subList(0, 5)) {
                     BottomTransactionItem(
@@ -195,12 +226,14 @@ class HomeFragment : Fragment() {
         }
 
     }
+
     val RowScope.rowItemMod: Modifier
         get() = Modifier.align(CenterVertically)
 
     @Composable
     fun BottomTransactionItem(cost: String, type: String, isExpense: Boolean, currency: String) {
-        val transactionEmoji = if(isExpense) "\uD83D\uDCB8" else "\uD83D\uDCB0"
+        val transactionEmoji = if (isExpense) "\uD83D\uDCB8  " else "\uD83D\uDCB0  "
+        val connectorText = if (isExpense) "on" else "from"
         Row(modifier = rowModifier) {
             MediumText(
                 text = transactionEmoji,
@@ -210,13 +243,13 @@ class HomeFragment : Fragment() {
             MediumText(
                 modifier = rowItemMod,
                 text = "$currency$cost",
-                color = if (isExpense) greenHome else redHome,
+                color = if (isExpense) MaterialTheme.colors.background else greenHome,
                 fontWeight = FontWeight.Bold
             )
 
             MediumText(
                 modifier = rowItemMod,
-                text = if(type.isEmpty()) "" else " on $type",
+                text = if (type.isEmpty()) "" else " $connectorText $type",
                 color = MaterialTheme.colors.onSecondary
             )
         }
