@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
+import ml.zedlabs.tbd.model.common.TransactionType
 import ml.zedlabs.tbd.repository.TransactionRepository
 import ml.zedlabs.tbd.util.Constants.randomColors
 import java.text.SimpleDateFormat
@@ -212,7 +213,9 @@ class TransactionViewModel @Inject constructor(
             val list = mutableListOf<Pair<String, Double>>()
             getLastWeekAsIntArray().forEach { element ->
                 var sum = 0.0
-                repository.getByDate(element)?.forEach {
+                repository.getByDate(element)?.filter {
+                    it.expenseType == TransactionType.Expense.name
+                }?.forEach {
                     val amount: Double = try {
                         it.amount.toDouble()
                     } catch (exception: Exception) {
