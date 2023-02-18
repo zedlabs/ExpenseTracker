@@ -315,16 +315,16 @@ class TransactionListFragment : Fragment() {
                 color = MaterialTheme.colors.onSecondary
             )
             MediumText(
-                text = viewModel.getMonthFromTimestamp(System.currentTimeMillis()),
+                text = viewModel.selectedMonth.value.orEmpty(),
                 modifier = mod.clickable {
-                    viewModel.yearSelectionDialogState.value = true
+                    viewModel.monthSelectionDialogState.value = true
                 },
                 color = MaterialTheme.colors.onSecondary
             )
             MediumText(
-                text = viewModel.getYearFromTimestamp(System.currentTimeMillis()),
+                text = viewModel.selectedYear.value.orEmpty(),
                 modifier = mod.clickable {
-                    viewModel.monthSelectionDialogState.value = true
+                    viewModel.yearSelectionDialogState.value = true
                 },
                 color = MaterialTheme.colors.onSecondary
             )
