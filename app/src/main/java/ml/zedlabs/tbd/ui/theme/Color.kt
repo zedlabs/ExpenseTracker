@@ -14,6 +14,8 @@ val TealSecondaryDark = Color(0xFF428e92)
 val TealSecondaryLight = Color(0xFF00363a)
 val BackgroundLight = Color(0xFFF1F1E5)
 val Olive = Color(0xFFe8e1bf)
+val greenHome = Color(0xFF88C78A)
+val redHome = Color(0xFFD67770)
 
 
 //Red Theme Color
