@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -28,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,7 +66,7 @@ class HomeFragment : Fragment() {
     private val transactionViewModel: TransactionViewModel by activityViewModels()
     private val rowModifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 6.dp)
+        .padding(top = 6.dp, start = 6.dp, end = 6.dp)
 
     override fun onResume() {
         super.onResume()
@@ -182,7 +187,7 @@ class HomeFragment : Fragment() {
                         MediumText(
                             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
                             fontSize = 22.sp,
-                            text = "Last 5 Transactions 💸",
+                            text = "Last 5 Transactions:",
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colors.onSecondary
                         )
@@ -213,12 +218,15 @@ class HomeFragment : Fragment() {
                     }
 
                 }
-                items(items = tl.data.orEmpty().subList(0, 5)) {
+                val subList = tl.data.orEmpty().subList(0, 5)
+                itemsIndexed(items = subList) { index, item ->
                     BottomTransactionItem(
-                        it.amount,
-                        it.type,
-                        it.expenseType == TransactionType.Expense.name,
-                        currency.data.orEmpty()
+                        item.amount,
+                        item.type,
+                        item.expenseType == TransactionType.Expense.name,
+                        currency.data.orEmpty(),
+                        item.note,
+                        if (index == subList.lastIndex) false else true
                     )
                 }
 
@@ -231,27 +239,53 @@ class HomeFragment : Fragment() {
         get() = Modifier.align(CenterVertically)
 
     @Composable
-    fun BottomTransactionItem(cost: String, type: String, isExpense: Boolean, currency: String) {
-        val transactionEmoji = if (isExpense) "\uD83D\uDCB8  " else "\uD83D\uDCB0  "
+    fun BottomTransactionItem(
+        cost: String,
+        type: String,
+        isExpense: Boolean,
+        currency: String,
+        note: String,
+        drawSep: Boolean
+    ) {
+        val operator = if (isExpense) "-" else "+"
         val connectorText = if (isExpense) "on" else "from"
-        Row(modifier = rowModifier) {
-            MediumText(
-                text = transactionEmoji,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-            MediumText(
-                modifier = rowItemMod,
-                text = "$currency$cost",
-                color = if (isExpense) MaterialTheme.colors.background else greenHome,
-                fontWeight = FontWeight.Bold
-            )
+        Column {
+            Row(modifier = rowModifier) {
+//            MediumText(
+//                text = transactionEmoji,
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 20.sp
+//            )
+                MediumText(
+                    modifier = rowItemMod,
+                    text = "$operator$currency$cost",
+                    color = if (isExpense) MaterialTheme.colors.background else greenHome,
+                    fontWeight = FontWeight.Bold
+                )
 
-            MediumText(
-                modifier = rowItemMod,
-                text = if (type.isEmpty()) "" else " $connectorText $type",
-                color = MaterialTheme.colors.onSecondary
-            )
+                MediumText(
+                    modifier = rowItemMod,
+                    text = if (type.isEmpty()) "" else " $connectorText $type",
+                    color = MaterialTheme.colors.onSecondary
+                )
+            }
+            if (note.isNotEmpty()) {
+                MediumText(
+                    modifier = rowModifier.padding(start = 6.dp),
+                    text = note,
+                    color = MaterialTheme.colors.onSecondary,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 14.sp
+                )
+            }
+            if (drawSep) {
+                Spacer(
+                    modifier = rowModifier
+                        .background(Color.Gray.copy(alpha = 0.4f))
+                        .fillMaxWidth()
+                        .height(1.dp)
+                )
+            }
         }
     }
 
