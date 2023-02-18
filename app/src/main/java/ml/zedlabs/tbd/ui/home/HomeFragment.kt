@@ -52,6 +52,10 @@ class HomeFragment : Fragment() {
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
     private val transactionViewModel: TransactionViewModel by activityViewModels()
 
+    override fun onResume() {
+        super.onResume()
+        transactionViewModel.getTransactionPairsForLastWeek()
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -2,9 +2,7 @@ package ml.zedlabs.tbd.ui.transaction
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,11 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
@@ -56,7 +52,6 @@ class TransactionViewModel @Inject constructor(
     val lastTenDayTransactionPairs = mutableStateOf<List<Pair<String, Double>>>(listOf())
 
     init {
-        getTransactionPairsForLastTenDays()
         getUsersTransactions()
     }
 
@@ -212,10 +207,10 @@ class TransactionViewModel @Inject constructor(
         return calendar.get(Calendar.YEAR).toString()
     }
 
-    private fun getTransactionPairsForLastTenDays() {
+    fun getTransactionPairsForLastWeek() {
         viewModelScope.launch {
             val list = mutableListOf<Pair<String, Double>>()
-            getLastTenDaysAsIntArray().forEach { element ->
+            getLastWeekAsIntArray().forEach { element ->
                 var sum = 0.0
                 repository.getByDate(element)?.forEach {
                     val amount: Double = try {
@@ -233,7 +228,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun getLastTenDaysAsIntArray(): List<String> {
+    private fun getLastWeekAsIntArray(): List<String> {
         val today = System.currentTimeMillis()
         val dateFormatArray = mutableListOf<String>()
         dateFormatArray.add(0, getFormattedIntegerDateFromTimeStamp(today))
