@@ -180,7 +180,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun getMonthFromTimestamp(timestamp: Long): String {
+    fun getMonthFromTimestamp(timestamp: Long): String {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = timestamp
         return when (calendar.get(Calendar.MONTH)) {

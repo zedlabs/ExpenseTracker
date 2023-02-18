@@ -227,7 +227,7 @@ class HomeFragment : Fragment() {
                         item.expenseType == TransactionType.Expense.name,
                         currency.data.orEmpty(),
                         item.note,
-                        if (index == subList.lastIndex) false else true
+                        index != subList.lastIndex
                     )
                 }
 
@@ -274,7 +274,7 @@ class HomeFragment : Fragment() {
                 MediumText(
                     modifier = rowModifier.padding(start = 6.dp),
                     text = note,
-                    color = MaterialTheme.colors.onSecondary,
+                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Light,
                     fontSize = 14.sp
                 )

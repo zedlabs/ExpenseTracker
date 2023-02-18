@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,13 +42,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +62,7 @@ import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
+import ml.zedlabs.tbd.model.common.Currency
 import ml.zedlabs.tbd.model.common.TransactionType
 import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.LargeText
@@ -65,8 +71,10 @@ import ml.zedlabs.tbd.ui.common.PrimaryText
 import ml.zedlabs.tbd.ui.common.SecondaryText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
+import ml.zedlabs.tbd.ui.onboarding.OnboardingViewModel
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
+import ml.zedlabs.tbd.ui.theme.greenHome
 import ml.zedlabs.tbd.util.showToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -75,7 +83,7 @@ class TransactionListFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: TransactionViewModel by activityViewModels()
-
+    private val onbViewModel: OnboardingViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,6 +105,7 @@ class TransactionListFragment : Fragment() {
         val scope = rememberCoroutineScope()
         val listItems by viewModel.transactionList.collectAsState()
         val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+        val currency by onbViewModel.localCurrency.collectAsState()
 
         ModalBottomSheetLayout(
             sheetState = bottomState,
@@ -120,24 +129,21 @@ class TransactionListFragment : Fragment() {
                         )
                     }
                     items(items = listItems.data.orEmpty()) { item ->
-                        MediumText(
-                            text = "Type-> ${item.type}  \nAmount-> ${item.amount}  \nNote-> ${item.note}\n-----------------------",
-                            modifier = mod.clickable {
-                                //update current selection
-                                viewModel.currentTransactionSelection.value =
-                                    CurrentItemState.Exists(item)
-                                setValues(
-                                    item.note,
-                                    item.expenseType,
-                                    item.type,
-                                    item.amount.toString()
-                                )
-                                //show bottom sheet
-                                scope.launch {
-                                    bottomState.show()
-                                }
+                        TransactionListItem(item, currency.data.orEmpty()) {
+                            //update current selection
+                            viewModel.currentTransactionSelection.value =
+                                CurrentItemState.Exists(item)
+                            setValues(
+                                item.note,
+                                item.expenseType,
+                                item.type,
+                                item.amount.toString()
+                            )
+                            //show bottom sheet
+                            scope.launch {
+                                bottomState.show()
                             }
-                        )
+                        }
                     }
                 }
             } else {
@@ -148,6 +154,59 @@ class TransactionListFragment : Fragment() {
                         .fillMaxSize()
                 )
             }
+        }
+    }
+
+    private val rowModifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 6.dp, start = 6.dp, end = 6.dp)
+
+    private val RowScope.rowItemMod: Modifier
+        get() = Modifier.align(Alignment.CenterVertically)
+
+    //to add here: transaction time, income confetti, delete option
+    @Composable
+    private fun TransactionListItem(item: TransactionItem, currency: String, onClick: () -> Unit) {
+        val isExpense: Boolean = (item.expenseType == TransactionType.Expense.name)
+        val operator = if (isExpense) "-" else "+"
+        val connectorText = if (isExpense) "on" else "from"
+        Column(modifier = Modifier.clickable {
+            onClick.invoke()
+        }) {
+            Row(modifier = rowModifier) {
+//            MediumText(
+//                text = transactionEmoji,
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 20.sp
+//            )
+                MediumText(
+                    modifier = rowItemMod,
+                    text = "$operator$currency${item.amount}",
+                    color = if (isExpense) MaterialTheme.colors.background else greenHome,
+                    fontWeight = FontWeight.Bold
+                )
+
+                MediumText(
+                    modifier = rowItemMod,
+                    text = if (item.type.isEmpty()) "" else " $connectorText ${item.type}",
+                    color = MaterialTheme.colors.onSecondary
+                )
+            }
+            if (item.note.isNotEmpty()) {
+                MediumText(
+                    modifier = rowModifier.padding(start = 6.dp),
+                    text = item.note,
+                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.7f),
+                    fontWeight = FontWeight.Light,
+                    fontSize = 14.sp
+                )
+            }
+            Spacer(
+                modifier = rowModifier
+                    .background(Color.Gray.copy(alpha = 0.4f))
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
         }
     }
 
@@ -246,33 +305,34 @@ class TransactionListFragment : Fragment() {
         addTransactionSheetState: ModalBottomSheetState
     ) {
         Spacer24()
-        LargeText(
-            text = "Welcome to transaction list",
-            color = MaterialTheme.colors.onSecondary,
-            modifier = mod.clickable { viewModel.deleteAllFromDb() }
-        )
         Spacer24()
         Row(
             modifier = mod.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             MediumText(
-                text = "Select Month",
-                modifier = mod.clickable {
-                    viewModel.monthSelectionDialogState.value = true
-                }
+                text = "Your Expenses for : ",
+                color = MaterialTheme.colors.onSecondary
             )
             MediumText(
-                text = "Select Year",
+                text = viewModel.getMonthFromTimestamp(System.currentTimeMillis()),
                 modifier = mod.clickable {
                     viewModel.yearSelectionDialogState.value = true
-                }
+                },
+                color = MaterialTheme.colors.onSecondary
+            )
+            MediumText(
+                text = viewModel.getYearFromTimestamp(System.currentTimeMillis()),
+                modifier = mod.clickable {
+                    viewModel.monthSelectionDialogState.value = true
+                },
+                color = MaterialTheme.colors.onSecondary
             )
         }
 
         Spacer24()
         MediumText(
-            text = "Add Expense / Income",
+            text = "Create New Income / Expense +",
             modifier = mod.clickable {
                 // open the bottom sheet
                 viewModel.currentTransactionSelection.value = CurrentItemState.DoesNotExist
