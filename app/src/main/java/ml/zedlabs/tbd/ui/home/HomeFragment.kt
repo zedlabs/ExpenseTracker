@@ -230,6 +230,9 @@ class HomeFragment : Fragment() {
                         index != subList.lastIndex
                     )
                 }
+                item {
+                    Spacer24()
+                }
 
             }
         }

@@ -7,12 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +48,7 @@ import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.CurrencyItem
+import ml.zedlabs.tbd.ui.common.HSpacer24
 import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.SemiLargeText
@@ -134,13 +140,16 @@ class OnboardingFragment : Fragment() {
                     .fillMaxWidth()
                     .align(CenterHorizontally)
                     .padding(horizontal = 32.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.background,
+                    disabledBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.2f)
+                ),
                 enabled = onboardingViewModel.selectedCountryCodeState.value != null
             ) {
                 MediumText(
                     text = "Continue!",
-                    modifier = modifier.background(MaterialTheme.colors.background),
-                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colors.onSecondary,
+                    fontWeight = FontWeight.Light,
                 )
             }
         }
@@ -188,26 +197,39 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    val colMod = Modifier
+
     @Composable
     fun CountryListItem(item: CurrencyItem) {
         val selectedItem = onboardingViewModel.selectedCountryCodeState.value
 
-        Row(
-            modifier = onboardingRowModifier
-                .clickable {
-                    onboardingViewModel.countrySelected(item)
-                }
-                .padding(16.dp)
+        Column(
+            modifier = colMod
+                .fillMaxWidth()
+                .border(
+                    2.dp, if (selectedItem != null
+                        && item.countryCode == selectedItem.countryCode
+                        && item.currencySymbol == selectedItem.currencySymbol
+                    ) MaterialTheme.colors.background else MaterialTheme.colors.secondary
+                )
         ) {
-            MediumText(
-                text = item.flag + "   " + item.countryName + "   ${item.currencySymbol}   ",
-                color = MaterialTheme.colors.onSecondary
-            )
-            if (selectedItem != null
-                && item.countryCode == selectedItem.countryCode
-                && item.currencySymbol == selectedItem.currencySymbol
+            Row(
+                modifier = onboardingRowModifier
+                    .clickable {
+                        onboardingViewModel.countrySelected(item)
+                    }
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "check")
+                MediumText(
+                    text = item.flag + "   " + item.countryName,
+                    color = MaterialTheme.colors.onSecondary
+                )
+                MediumText(
+                    text = item.currencySymbol,
+                    color = MaterialTheme.colors.onSecondary
+                )
+
             }
         }
     }
