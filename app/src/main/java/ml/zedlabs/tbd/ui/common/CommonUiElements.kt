@@ -14,23 +14,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DefaultTopButton(imageVector: ImageVector, clickAction: () -> Unit) {
+fun DefaultTopButton(
+    imageVector: ImageVector,
+    bgColor: Color = MaterialTheme.colors.primary,
+    itemColor: Color = MaterialTheme.colors.onSecondary,
+    clickAction: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .size(42.dp)
-            .background(MaterialTheme.colors.primary)
+            .background(bgColor)
             .clickable { clickAction.invoke() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = imageVector,
             contentDescription = "back-button",
-            tint = MaterialTheme.colors.onSecondary,
+            tint = itemColor,
             modifier = Modifier.size(20.dp)
         )
     }

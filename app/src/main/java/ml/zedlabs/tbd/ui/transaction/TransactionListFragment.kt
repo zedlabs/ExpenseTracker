@@ -37,6 +37,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -68,6 +71,7 @@ import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.TransactionType
+import ml.zedlabs.tbd.ui.common.DefaultTopButton
 import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.PrimaryText
@@ -316,30 +320,48 @@ class TransactionListFragment : Fragment() {
     fun TransactionHeaderItem(
         mod: Modifier = Modifier,
     ) {
-        Spacer24()
-        Spacer24()
-        Row(
-            modifier = mod.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Spacer12()
+        Column(
+            modifier = mod.fillMaxWidth()
         ) {
-            MediumText(
-                text = "Your Expenses for : ",
-                color = MaterialTheme.colors.onSecondary
-            )
-            MediumText(
-                text = viewModel.selectedMonth.value.orEmpty(),
-                modifier = mod.clickable {
-                    viewModel.monthSelectionDialogState.value = true
-                },
-                color = MaterialTheme.colors.onSecondary
-            )
-            MediumText(
-                text = viewModel.selectedYear.value.orEmpty(),
-                modifier = mod.clickable {
-                    viewModel.yearSelectionDialogState.value = true
-                },
-                color = MaterialTheme.colors.onSecondary
-            )
+            Row {
+                DefaultTopButton(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    bgColor = MaterialTheme.colors.onSecondary,
+                    itemColor = MaterialTheme.colors.onPrimary
+                ) {
+                    view?.findNavController()?.navigateUp()
+                }
+                MediumText(
+                    modifier = mod
+                        .align(Bottom)
+                        .padding(start = 26.dp),
+                    text = "Your Transactions for",
+                    color = MaterialTheme.colors.onSecondary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 26.sp
+                )
+            }
+            Spacer24()
+            Row(
+                modifier = mod.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                MediumText(
+                    text = viewModel.selectedMonth.value.orEmpty(),
+                    modifier = mod.clickable {
+                        viewModel.monthSelectionDialogState.value = true
+                    },
+                    color = MaterialTheme.colors.onSecondary
+                )
+                MediumText(
+                    text = viewModel.selectedYear.value.orEmpty(),
+                    modifier = mod.clickable {
+                        viewModel.yearSelectionDialogState.value = true
+                    },
+                    color = MaterialTheme.colors.onSecondary
+                )
+            }
         }
         Spacer24()
     }
