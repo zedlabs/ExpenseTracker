@@ -5,19 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,15 +29,17 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,10 +67,8 @@ import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
-import ml.zedlabs.tbd.model.common.Currency
 import ml.zedlabs.tbd.model.common.TransactionType
 import ml.zedlabs.tbd.ui.common.HSpacer12
-import ml.zedlabs.tbd.ui.common.LargeText
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.PrimaryText
 import ml.zedlabs.tbd.ui.common.SecondaryText
@@ -116,34 +119,45 @@ class TransactionListFragment : Fragment() {
                 AddTransactionSubTypeDialog()
                 MonthSelectionDialog()
                 YearSelectionDialog()
-                LazyColumn(
-                    modifier = mod
-                        .background(color = MaterialTheme.colors.secondary)
-                        .fillMaxSize()
-                        .padding(horizontal = 12.dp)
-                ) {
-                    item {
-                        TransactionHeaderItem(
+                Column {
+                    LazyColumn(
+                        modifier = mod
+                            .background(color = MaterialTheme.colors.secondary)
+                            .fillMaxHeight(.92f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                    ) {
+                        item {
+                            TransactionHeaderItem()
+                        }
+                        items(items = listItems.data.orEmpty()) { item ->
+                            TransactionListItem(item, currency.data.orEmpty()) {
+                                //update current selection
+                                viewModel.currentTransactionSelection.value =
+                                    CurrentItemState.Exists(item)
+                                setValues(
+                                    item.note,
+                                    item.expenseType,
+                                    item.type,
+                                    item.amount.toString()
+                                )
+                                //show bottom sheet
+                                scope.launch {
+                                    bottomState.show()
+                                }
+                            }
+                        }
+                    }
+                    Column(
+                        modifier = mod
+                            .fillMaxSize()
+                            .background(MaterialTheme.colors.secondary),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        TransactionBottomSticky(
                             scope = scope,
                             addTransactionSheetState = bottomState
                         )
-                    }
-                    items(items = listItems.data.orEmpty()) { item ->
-                        TransactionListItem(item, currency.data.orEmpty()) {
-                            //update current selection
-                            viewModel.currentTransactionSelection.value =
-                                CurrentItemState.Exists(item)
-                            setValues(
-                                item.note,
-                                item.expenseType,
-                                item.type,
-                                item.amount.toString()
-                            )
-                            //show bottom sheet
-                            scope.launch {
-                                bottomState.show()
-                            }
-                        }
                     }
                 }
             } else {
@@ -301,8 +315,6 @@ class TransactionListFragment : Fragment() {
     @Composable
     fun TransactionHeaderItem(
         mod: Modifier = Modifier,
-        scope: CoroutineScope,
-        addTransactionSheetState: ModalBottomSheetState
     ) {
         Spacer24()
         Spacer24()
@@ -329,21 +341,50 @@ class TransactionListFragment : Fragment() {
                 color = MaterialTheme.colors.onSecondary
             )
         }
+        Spacer24()
+    }
 
-        Spacer24()
-        MediumText(
-            text = "Create New Income / Expense +",
-            modifier = mod.clickable {
-                // open the bottom sheet
-                viewModel.currentTransactionSelection.value = CurrentItemState.DoesNotExist
-                setValues()
-                scope.launch {
-                    addTransactionSheetState.show()
-                }
-            },
-            color = MaterialTheme.colors.onSecondary
-        )
-        Spacer24()
+    @Composable
+    fun TransactionBottomSticky(
+        mod: Modifier = Modifier,
+        scope: CoroutineScope,
+        addTransactionSheetState: ModalBottomSheetState
+    ) {
+        Box(
+            modifier = mod
+                .fillMaxSize()
+                .background(MaterialTheme.colors.secondary)
+        ) {
+            Row(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.onSecondary)
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                    .align(Center)
+                    .clickable {
+                        //    open the bottom sheet
+                        viewModel.currentTransactionSelection.value = CurrentItemState.DoesNotExist
+                        setValues()
+                        scope.launch {
+                            addTransactionSheetState.show()
+                        }
+                    }
+            ) {
+                MediumText(
+                    text = "Add Expense / Income",
+                    color = MaterialTheme.colors.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                HSpacer12()
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier
+                        .size(18.dp),
+                    contentDescription = "create new transaction"
+                )
+            }
+        }
     }
 
     private fun setValues(
