@@ -3,11 +3,15 @@ package ml.zedlabs.tbd.ui.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
@@ -39,5 +43,33 @@ fun DefaultTopButton(
             tint = itemColor,
             modifier = Modifier.size(20.dp)
         )
+    }
+}
+
+@Composable
+fun ButtonRoundedStyle(
+    click: () -> Unit,
+    mod: Modifier = Modifier,
+    text: String,
+    vector: ImageVector? = null
+) {
+    Row(
+        modifier = mod
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { click.invoke() }
+            .background(MaterialTheme.colors.onSecondary.copy(alpha = 0.2f))
+            .padding(vertical = 8.dp, horizontal = 12.dp),
+    ) {
+        MediumText(
+            text = text,
+            color = MaterialTheme.colors.onSecondary
+        )
+        if (vector != null) {
+            Icon(
+                imageVector = vector,
+                tint = MaterialTheme.colors.onSecondary,
+                contentDescription = "special button click action"
+            )
+        }
     }
 }

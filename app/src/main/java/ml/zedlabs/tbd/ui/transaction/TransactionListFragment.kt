@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -38,6 +39,8 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.sharp.ArrowDropDown
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +55,9 @@ import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +76,7 @@ import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
 import ml.zedlabs.tbd.model.common.TransactionType
+import ml.zedlabs.tbd.ui.common.ButtonRoundedStyle
 import ml.zedlabs.tbd.ui.common.DefaultTopButton
 import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.MediumText
@@ -344,22 +350,25 @@ class TransactionListFragment : Fragment() {
             }
             Spacer24()
             Row(
-                modifier = mod.fillMaxWidth(),
+                modifier = mod
+                    .fillMaxWidth()
+                    .padding(horizontal = 38.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                MediumText(
-                    text = viewModel.selectedMonth.value.orEmpty(),
-                    modifier = mod.clickable {
+                ButtonRoundedStyle(
+                    click = {
                         viewModel.monthSelectionDialogState.value = true
                     },
-                    color = MaterialTheme.colors.onSecondary
+                    text = viewModel.selectedMonth.value ?: "All",
+                    vector = Icons.Sharp.ArrowDropDown
+
                 )
-                MediumText(
-                    text = viewModel.selectedYear.value.orEmpty(),
-                    modifier = mod.clickable {
+                ButtonRoundedStyle(
+                    click = {
                         viewModel.yearSelectionDialogState.value = true
                     },
-                    color = MaterialTheme.colors.onSecondary
+                    text = viewModel.selectedYear.value ?: "All",
+                    vector = Icons.Sharp.ArrowDropDown
                 )
             }
         }
