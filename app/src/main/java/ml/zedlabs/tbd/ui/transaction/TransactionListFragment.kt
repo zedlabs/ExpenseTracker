@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,6 +61,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,6 +74,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.MainViewModel
+import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
@@ -140,23 +143,30 @@ class TransactionListFragment : Fragment() {
                         item {
                             TransactionHeaderItem()
                         }
-                        items(items = listItems.data.orEmpty()) { item ->
-                            TransactionListItem(item, currency.data.orEmpty()) {
-                                //update current selection
-                                viewModel.currentTransactionSelection.value =
-                                    CurrentItemState.Exists(item)
-                                setValues(
-                                    item.note,
-                                    item.expenseType,
-                                    item.type,
-                                    item.amount.toString()
-                                )
-                                //show bottom sheet
-                                scope.launch {
-                                    bottomState.show()
+                        if (listItems.data.isNullOrEmpty().not()) {
+                            items(items = listItems.data.orEmpty()) { item ->
+                                TransactionListItem(item, currency.data.orEmpty()) {
+                                    //update current selection
+                                    viewModel.currentTransactionSelection.value =
+                                        CurrentItemState.Exists(item)
+                                    setValues(
+                                        item.note,
+                                        item.expenseType,
+                                        item.type,
+                                        item.amount.toString()
+                                    )
+                                    //show bottom sheet
+                                    scope.launch {
+                                        bottomState.show()
+                                    }
                                 }
                             }
+                        } else {
+                            item {
+                                EmptyFilterList()
+                            }
                         }
+
                     }
                     Column(
                         modifier = mod
@@ -178,6 +188,24 @@ class TransactionListFragment : Fragment() {
                         .fillMaxSize()
                 )
             }
+        }
+    }
+
+    @Composable
+    fun EmptyFilterList() {
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer24()
+            Spacer24()
+            Image(
+                painter = painterResource(id = R.drawable.search_empty),
+                contentDescription = "searching",
+                alignment = Alignment.Center
+            )
+            Spacer24()
+            PrimaryText(text = "No Media in the selected filters!")
         }
     }
 
