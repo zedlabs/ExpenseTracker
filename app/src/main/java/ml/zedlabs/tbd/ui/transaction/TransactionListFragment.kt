@@ -205,7 +205,7 @@ class TransactionListFragment : Fragment() {
                 alignment = Alignment.Center
             )
             Spacer24()
-            PrimaryText(text = "No Media in the selected filters!")
+            PrimaryText(text = "No Transactions found for the selected time period!")
         }
     }
 
