@@ -65,6 +65,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -199,13 +200,18 @@ class TransactionListFragment : Fragment() {
         ) {
             Spacer24()
             Spacer24()
+            Spacer24()
             Image(
                 painter = painterResource(id = R.drawable.search_empty),
                 contentDescription = "searching",
                 alignment = Alignment.Center
             )
             Spacer24()
-            PrimaryText(text = "No Transactions found for the selected time period!")
+            PrimaryText(
+                text = "No Transactions found for the selected time period!",
+                align = TextAlign.Center,
+                color = MaterialTheme.colors.onSecondary
+            )
         }
     }
 
