@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -156,17 +157,32 @@ fun MediumText(
     fontSize: TextUnit = 16.sp,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
-    fontWeight: FontWeight = FontWeight.Light
+    fontWeight: FontWeight = FontWeight.Light,
+    style: TextStyle? = null
 ) {
-    Text(
-        text = text,
-        color = color,
-        fontSize = fontSize,
-        modifier = modifier,
-        maxLines = maxLines,
-        overflow = overflow,
-        fontWeight = fontWeight
-    )
+    if (style == null) {
+        Text(
+            text = text,
+            color = color,
+            fontSize = fontSize,
+            modifier = modifier,
+            maxLines = maxLines,
+            overflow = overflow,
+            fontWeight = fontWeight
+        )
+    } else {
+        Text(
+            text = text,
+            color = color,
+            fontSize = fontSize,
+            modifier = modifier,
+            maxLines = maxLines,
+            overflow = overflow,
+            fontWeight = fontWeight,
+            style = style
+        )
+    }
+
 }
 
 

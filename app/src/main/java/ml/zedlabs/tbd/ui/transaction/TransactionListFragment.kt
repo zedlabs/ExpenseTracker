@@ -62,10 +62,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -282,7 +284,10 @@ class TransactionListFragment : Fragment() {
                             modifier = mod
                                 .align(CenterHorizontally),
                             color = MaterialTheme.colors.onSecondary,
-                            text = "Select Month"
+                            text = "Select Month",
+                            fontSize = 22.sp,
+                            style = TextStyle(textDecoration = TextDecoration.Underline),
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 },
@@ -303,11 +308,20 @@ class TransactionListFragment : Fragment() {
                             "November",
                             "December"
                         ).forEach {
-                            MediumText(text = it, modifier = mod.clickable {
-                                viewModel.selectedMonth.value = if (it == "All") null else it
-                                viewModel.getUsersTransactions()
-                                viewModel.monthSelectionDialogState.value = false
-                            })
+                            MediumText(
+                                text = it,
+                                modifier = mod
+                                    .padding(vertical = 6.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .clickable {
+                                        viewModel.selectedMonth.value =
+                                            if (it == "All") null else it
+                                        viewModel.getUsersTransactions()
+                                        viewModel.monthSelectionDialogState.value = false
+                                    },
+                                color = MaterialTheme.colors.onSecondary,
+                                fontSize = 18.sp,
+                            )
                         }
                     }
                 },
@@ -332,18 +346,29 @@ class TransactionListFragment : Fragment() {
                             modifier = mod
                                 .align(CenterHorizontally),
                             color = MaterialTheme.colors.onSecondary,
-                            text = "Select year"
+                            text = "Select Year",
+                            fontSize = 22.sp,
+                            style = TextStyle(textDecoration = TextDecoration.Underline),
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 },
                 text = {
                     Column {
                         viewModel.pastSixYearsList.forEach {
-                            MediumText(text = it, modifier = mod.clickable {
-                                viewModel.selectedYear.value = if (it == "All") null else it
-                                viewModel.getUsersTransactions()
-                                viewModel.yearSelectionDialogState.value = false
-                            })
+                            MediumText(
+                                text = it,
+                                modifier = mod
+                                    .padding(vertical = 6.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .clickable {
+                                        viewModel.selectedYear.value = if (it == "All") null else it
+                                        viewModel.getUsersTransactions()
+                                        viewModel.yearSelectionDialogState.value = false
+                                    },
+                                color = MaterialTheme.colors.onSecondary,
+                                fontSize = 18.sp,
+                            )
                         }
                     }
                 },
