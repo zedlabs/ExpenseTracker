@@ -172,7 +172,7 @@ class HomeFragment : Fragment() {
 
     @Composable
     fun HomeBottomSection() {
-        val tl by transactionViewModel.transactionList.collectAsState()
+        val tl by transactionViewModel.lastFiveTransactions.collectAsState()
         val currency by onboardingViewModel.localCurrency.collectAsState()
         if (tl is Resource.Success) {
             LazyColumn(
@@ -219,7 +219,7 @@ class HomeFragment : Fragment() {
                     }
 
                 }
-                val subList = tl.data.orEmpty().subList(0, 5)
+                val subList = tl.data?.take(5).orEmpty()
                 itemsIndexed(items = subList) { index, item ->
                     BottomTransactionItem(
                         item.amount,

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
@@ -46,6 +47,11 @@ class TransactionViewModel @Inject constructor(
         MutableStateFlow<Resource<List<TransactionItem>>>(Resource.Uninitialised())
     val transactionList = _transactionList.asStateFlow()
 
+    private val _lastFiveTransactions =
+        MutableStateFlow<Resource<List<TransactionItem>>>(Resource.Uninitialised())
+    val lastFiveTransactions = _lastFiveTransactions.asStateFlow()
+
+
     private val _transactionTypeList =
         MutableStateFlow<Resource<List<ExpenseTypeItem>>>(Resource.Uninitialised())
     val transactionTypeList = _transactionTypeList.asStateFlow()
@@ -54,6 +60,7 @@ class TransactionViewModel @Inject constructor(
     val largestExpensePastWeek = mutableStateOf<TransactionItem?>(null)
 
     init {
+        getUsersLastFiveTransactions()
         getUsersTransactions()
         getLargestTransaction()
     }
@@ -82,6 +89,17 @@ class TransactionViewModel @Inject constructor(
                 .flowOn(Dispatchers.Main)
                 .collectLatest {
                     _transactionList.value = Resource.Success(it)
+                }
+        }
+    }
+
+    fun getUsersLastFiveTransactions() {
+        viewModelScope.launch {
+            repository.getAllTransactions()
+                .take(5)
+                .flowOn(Dispatchers.Main)
+                .collectLatest {
+                    _lastFiveTransactions.value = Resource.Success(it)
                 }
         }
     }
@@ -231,7 +249,7 @@ class TransactionViewModel @Inject constructor(
                     } catch (exception: Exception) {
                         0.0
                     }
-                    if(amount > largestExpense) {
+                    if (amount > largestExpense) {
                         largestExpense = amount
                         largestExpenseItem = it
                     }
