@@ -103,6 +103,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="themeSelectorFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="-6" />
+                            <option name="y" value="-1310" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="transaction_list_fragment">
                     <value>
                       <LayoutPositions>

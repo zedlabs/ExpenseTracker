@@ -134,7 +134,7 @@ class ProfileFragment : BaseAndroidFragment() {
                 icon,
                 contentDescription = "right icons",
                 Modifier.padding(top = 5.dp),
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colors.primary
             )
         }
     }
