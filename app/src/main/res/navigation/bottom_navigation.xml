@@ -43,6 +43,9 @@
         <action
             android:id="@+id/profile_to_premium"
             app:destination="@id/premium_fragment" />
+        <action
+            android:id="@+id/profile_to_theme"
+            app:destination="@id/themeSelectorFragment" />
     </fragment>
 
     <fragment
@@ -68,6 +71,10 @@
             android:id="@+id/onb_to_home"
             app:destination="@id/home_fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/themeSelectorFragment"
+        android:name="ml.zedlabs.tbd.ui.profile.ThemeSelectorFragment"
+        android:label="ThemeSelectorFragment" />
 
 
 </navigation>

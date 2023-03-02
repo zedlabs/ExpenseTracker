@@ -556,12 +556,14 @@ class TransactionListFragment : Fragment() {
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = MaterialTheme.colors.onSecondary,
                         cursorColor = MaterialTheme.colors.onSecondary,
-                        backgroundColor = MaterialTheme.colors.secondary,
+                        backgroundColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.1f),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
+                Spacer12()
                 TextField(
                     value = viewModel.note,
                     onValueChange = {
@@ -570,11 +572,12 @@ class TransactionListFragment : Fragment() {
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = MaterialTheme.colors.onSecondary,
                         cursorColor = MaterialTheme.colors.onSecondary,
-                        backgroundColor = MaterialTheme.colors.secondary,
+                        backgroundColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.1f),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
                     ),
+                    shape = RoundedCornerShape(12.dp),
                     placeholder = {
                         PrimaryText(
                             text = "📝 Note (Optional)",
@@ -741,16 +744,7 @@ class TransactionListFragment : Fragment() {
                 onDismissRequest = {
                     viewModel.addTypeDialogState.value = false
                 },
-                title = {
-                    Column(modifier = mod.fillMaxWidth()) {
-                        MediumText(
-                            modifier = mod
-                                .align(CenterHorizontally),
-                            color = MaterialTheme.colors.onSecondary,
-                            text = "Create New Category"
-                        )
-                    }
-                },
+                title = {},
                 text = {
                     Column {
                         TextField(
@@ -758,7 +752,24 @@ class TransactionListFragment : Fragment() {
                             onValueChange = {
                                 customCategory = it
                             },
-                            maxLines = 1
+                            maxLines = 1,
+                            colors = TextFieldDefaults.textFieldColors(
+                                textColor = MaterialTheme.colors.onSecondary,
+                                cursorColor = MaterialTheme.colors.onSecondary,
+                                backgroundColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.1f),
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            placeholder = {
+                                PrimaryText(
+                                    text = "📝 Create a new tag, eg:-\n\n\uD83D\uDEA3 Boat Repairs\n\uD83D\uDC1F Fish Food\n\uD83C\uDFC4 Surfing",
+                                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.4f),
+                                    fontSize = 16.sp,
+                                    align = TextAlign.Start
+                                )
+                            },
                         )
                     }
                 },
@@ -769,14 +780,18 @@ class TransactionListFragment : Fragment() {
                             .padding(vertical = 12.dp, horizontal = 42.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor =
-                            MaterialTheme.colors.secondary
+                            MaterialTheme.colors.onSecondary
                         ),
                         onClick = {
                             // save to db
                             viewModel.createNewTag(customCategory)
                             viewModel.addTypeDialogState.value = false
                         }) {
-                        MediumText(text = "Add Category!", color = MaterialTheme.colors.onSecondary)
+                        MediumText(
+                            text = "Add Category!",
+                            color = MaterialTheme.colors.primary,
+                            fontWeight = FontWeight.Normal
+                        )
                     }
                 }
             )

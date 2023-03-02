@@ -75,29 +75,36 @@ class ProfileFragment : BaseAndroidFragment() {
             Spacer24()
             TitleTextH2(text = "App Settings ⚙", modifier = Modifier)
             Spacer24()
-            if (profileViewModel.subState.collectAsState(initial = false).value) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    PrimaryText(
-                        modifier = Modifier.padding(top = 10.dp),
-                        text = "Dark Mode (Experimental)"
-                    )
-                    Switch(
-                        checked = profileViewModel.themeState.collectAsState(initial = false).value,
-                        onCheckedChange = {
-                            toggleTheme()
-                        }
-                    )
-                }
-                Spacer12()
-            }
+//            if (profileViewModel.subState.collectAsState(initial = false).value) {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    PrimaryText(
+//                        modifier = Modifier.padding(top = 10.dp),
+//                        text = "Dark Mode (Experimental)"
+//                    )
+//                    Switch(
+//                        checked = profileViewModel.themeState.collectAsState(initial = false).value,
+//                        onCheckedChange = {
+//                            toggleTheme()
+//                        }
+//                    )
+//                }
+//                Spacer12()
+//            }
+
             ProfileItemRow(
-                clickAction = ::redirectToPremiumMspScreen,
-                text = "Get Premium!\nDiscover new and exciting features!"
+                clickAction = ::redirectToThemeSelector,
+                text = "Change App Theme"
             )
             Spacer24()
+            //Not offering right now, maybe later
+//            ProfileItemRow(
+//                clickAction = ::redirectToPremiumMspScreen,
+//                text = "Get Premium!\nDiscover new and exciting features!"
+//            )
+//            Spacer24()
             ProfileItemRow(
                 clickAction = ::redirectToOnboarding,
                 text = "Change Currency"
@@ -139,6 +146,10 @@ class ProfileFragment : BaseAndroidFragment() {
     private fun redirectToOnboarding() {
         val action = ProfileFragmentDirections.profileToOnboarding(true)
         view?.findNavController()?.navigate(action)
+    }
+
+    private fun redirectToThemeSelector() {
+        view?.findNavController()?.navigate(R.id.profile_to_theme)
     }
 }
 
