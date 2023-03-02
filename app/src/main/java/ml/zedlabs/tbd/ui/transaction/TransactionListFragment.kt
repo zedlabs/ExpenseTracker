@@ -30,6 +30,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
+import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -37,10 +38,12 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.sharp.ArrowDropDown
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -58,7 +61,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -127,6 +129,7 @@ class TransactionListFragment : Fragment() {
         val currency by onbViewModel.localCurrency.collectAsState()
 
         ModalBottomSheetLayout(
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetState = bottomState,
             sheetContent = {
                 AddTransactionBottomSheet(state = bottomState)
@@ -156,7 +159,7 @@ class TransactionListFragment : Fragment() {
                                         item.note,
                                         item.expenseType,
                                         item.type,
-                                        item.amount.toString()
+                                        item.amount
                                     )
                                     //show bottom sheet
                                     scope.launch {
@@ -489,6 +492,7 @@ class TransactionListFragment : Fragment() {
         }
     }
 
+
     //sub type chip list should be sorted by popularity
     @Composable
     private fun AddTransactionBottomSheet(mod: Modifier = Modifier, state: ModalBottomSheetState) {
@@ -502,6 +506,7 @@ class TransactionListFragment : Fragment() {
         val currentItem = viewModel.currentTransactionSelection.collectAsState()
         val transactionSubTypeList = viewModel.transactionTypeList.collectAsState()
         val ctx = LocalContext.current
+        val currency by onbViewModel.localCurrency.collectAsState()
 
         LaunchedEffect(Unit) {
             viewModel.getUsersTransactionTypes()
@@ -512,7 +517,8 @@ class TransactionListFragment : Fragment() {
         ) {
             Column(
                 modifier = mod
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colors.secondary),
                 horizontalAlignment = CenterHorizontally
             ) {
                 Spacer24()
@@ -524,17 +530,21 @@ class TransactionListFragment : Fragment() {
                     chips = transactionSubTypeList.value.data.orEmpty(),
                 )
                 Spacer12()
-                TextField(value = viewModel.note,
-                    onValueChange = {
-                        viewModel.note = it
-                    }
-                )
                 TextField(
                     value = viewModel.amount,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Number
                     ),
+                    placeholder = {
+                        PrimaryText(
+                            text = "💸 Enter Amount in ${currency.data.orEmpty()}",
+                            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.4f),
+                            fontSize = 16.sp,
+                            align = TextAlign.Center
+                        )
+                    },
+                    singleLine = true,
                     onValueChange = {
                         try {
                             viewModel.amount = it
@@ -542,11 +552,44 @@ class TransactionListFragment : Fragment() {
                             ctx.showToast("Unable to parse as double")
                         }
 
-                    }
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = MaterialTheme.colors.onSecondary,
+                        cursorColor = MaterialTheme.colors.onSecondary,
+                        backgroundColor = MaterialTheme.colors.secondary,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    )
                 )
-                MediumText(text = "Add Transaction",
-                    color = MaterialTheme.colors.onSecondary,
-                    modifier = mod
+                TextField(
+                    value = viewModel.note,
+                    onValueChange = {
+                        viewModel.note = it
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = MaterialTheme.colors.onSecondary,
+                        cursorColor = MaterialTheme.colors.onSecondary,
+                        backgroundColor = MaterialTheme.colors.secondary,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    placeholder = {
+                        PrimaryText(
+                            text = "📝 Note (Optional)",
+                            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.4f),
+                            fontSize = 16.sp,
+                            align = TextAlign.Center
+                        )
+                    },
+                )
+                Spacer24()
+
+                Row(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.onSecondary)
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
                         .clickable {
                             when (currentItem.value) {
                                 CurrentItemState.DoesNotExist -> {
@@ -559,7 +602,9 @@ class TransactionListFragment : Fragment() {
                                             note = viewModel.note,
                                             type = viewModel.transactionSubType.value,
                                             amount = viewModel.amount,
-                                            date = viewModel.getFormattedIntegerDateFromTimeStamp(ts)
+                                            date = viewModel.getFormattedIntegerDateFromTimeStamp(
+                                                ts
+                                            )
                                         )
                                     )
                                 }
@@ -593,7 +638,23 @@ class TransactionListFragment : Fragment() {
                                 CurrentItemState.Loading -> Unit
                             }
                         }
-                )
+                ) {
+                    MediumText(
+                        text = "Add Transaction",
+                        color = MaterialTheme.colors.primary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    HSpacer12()
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        tint = MaterialTheme.colors.primary,
+                        modifier = Modifier
+                            .size(16.dp),
+                        contentDescription = "create new transaction"
+                    )
+                }
+                Spacer24()
             }
         } else {
             Spacer24()
@@ -606,20 +667,21 @@ class TransactionListFragment : Fragment() {
         LazyRow {
             items(chips) { currentItem ->
                 Chip(
+                    colors = ChipDefaults.chipColors(
+                        backgroundColor = MaterialTheme.colors.onSecondary.copy(
+                            alpha = 0.2f
+                        )
+                    ),
                     onClick = {
                         viewModel.transactionType.value = currentItem
                     },
                     border = if (viewModel.transactionType.value == currentItem) {
-                        BorderStroke(width = 1.dp, color = MaterialTheme.colors.onBackground)
+                        BorderStroke(width = 2.dp, color = MaterialTheme.colors.onBackground)
                     } else {
                         null
                     }
                 ) {
-                    if (viewModel.transactionType.value == currentItem) {
-                        PrimaryText(text = currentItem)
-                    } else {
-                        SecondaryText(text = currentItem)
-                    }
+                    PrimaryText(text = currentItem, color = MaterialTheme.colors.onSecondary)
                 }
                 HSpacer12()
             }
@@ -634,30 +696,36 @@ class TransactionListFragment : Fragment() {
         LazyRow {
             items(chips) { currentItem ->
                 Chip(
+                    colors = ChipDefaults.chipColors(
+                        backgroundColor = MaterialTheme.colors.onSecondary.copy(
+                            alpha = 0.2f
+                        )
+                    ),
                     onClick = {
                         viewModel.transactionSubType.value = currentItem.type
                     },
                     border = if (viewModel.transactionSubType.value == currentItem.type) {
-                        BorderStroke(width = 1.dp, color = MaterialTheme.colors.onBackground)
+                        BorderStroke(width = 2.dp, color = MaterialTheme.colors.onBackground)
                     } else {
                         null
                     }
                 ) {
-                    if (viewModel.transactionSubType.value == currentItem.type) {
-                        PrimaryText(text = currentItem.type)
-                    } else {
-                        SecondaryText(text = currentItem.type)
-                    }
+                    PrimaryText(text = currentItem.type, color = MaterialTheme.colors.onSecondary)
                 }
                 HSpacer12()
             }
             item {
                 Chip(
+                    colors = ChipDefaults.chipColors(
+                        backgroundColor = MaterialTheme.colors.onSecondary.copy(
+                            alpha = 0.2f
+                        )
+                    ),
                     onClick = {
                         viewModel.addTypeDialogState.value = true
                     }
                 ) {
-                    PrimaryText(text = "➕ Add Type")
+                    PrimaryText(text = "➕ Add Type", color = MaterialTheme.colors.onSecondary)
                 }
                 HSpacer12()
             }
