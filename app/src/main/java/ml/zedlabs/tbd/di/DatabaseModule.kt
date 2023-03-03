@@ -45,7 +45,7 @@ object DatabaseModule {
             .databaseBuilder(
                 applicationContext,
                 ExpenseTypeDatabase::class.java, "expense-type-db"
-            ).fallbackToDestructiveMigration()
+            ).createFromAsset("database/expensetypeitem.db").fallbackToDestructiveMigration()
             .build()
     }
 

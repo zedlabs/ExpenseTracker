@@ -39,7 +39,6 @@ import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 @AndroidEntryPoint
 class ProfileFragment : BaseAndroidFragment() {
 
-    private val profileViewModel: ProfileViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -57,10 +56,6 @@ class ProfileFragment : BaseAndroidFragment() {
                 }
             }
         }
-    }
-
-    private fun toggleTheme() {
-        profileViewModel.updateTheme()
     }
 
     @Composable

@@ -15,5 +15,5 @@ data class ExpenseTypeItem(
     val type: String,
 
     @ColumnInfo(name = "dot_color")
-        val dotColor: String
+    val dotColor: String
 )
