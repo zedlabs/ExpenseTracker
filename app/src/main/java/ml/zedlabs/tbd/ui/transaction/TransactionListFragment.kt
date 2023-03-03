@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.sharp.ArrowDropDown
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -135,7 +137,7 @@ class TransactionListFragment : Fragment() {
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetState = bottomState,
             sheetContent = {
-                AddTransactionBottomSheet(state = bottomState)
+                AddTransactionBottomSheet(state = bottomState, scope = scope)
             }) {
             if (listItems is Resource.Success) {
                 AddTransactionSubTypeDialog()
@@ -498,7 +500,11 @@ class TransactionListFragment : Fragment() {
 
     //sub type chip list should be sorted by popularity
     @Composable
-    private fun AddTransactionBottomSheet(mod: Modifier = Modifier, state: ModalBottomSheetState) {
+    private fun AddTransactionBottomSheet(
+        mod: Modifier = Modifier,
+        state: ModalBottomSheetState,
+        scope: CoroutineScope
+    ) {
 
 //        if (state.isVisible.not()) {
 //            // does not initialise the bottom sheet on fragment open
@@ -595,73 +601,105 @@ class TransactionListFragment : Fragment() {
                 )
                 Spacer24()
 
-                Row(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.onSecondary)
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .clickable {
-                            when (currentItem.value) {
-                                CurrentItemState.DoesNotExist -> {
-                                    val ts = System.currentTimeMillis()
-                                    // create new transaction
-                                    viewModel.createTransaction(
-                                        TransactionItem(
-                                            expenseType = viewModel.transactionType.value,
-                                            timestamp = ts,
-                                            note = viewModel.note,
-                                            type = viewModel.transactionSubType.value,
-                                            amount = viewModel.amount,
-                                            date = viewModel.getFormattedIntegerDateFromTimeStamp(
-                                                ts
-                                            )
-                                        )
-                                    )
-                                }
-
-                                is CurrentItemState.Exists -> {
-                                    //update existing transaction
-                                    if (currentItem.value.transactionItem?.type == viewModel.transactionSubType.value
-                                        && currentItem.value.transactionItem?.expenseType == viewModel.transactionType.value
-                                        && currentItem.value.transactionItem?.note == viewModel.note
-                                        && currentItem.value.transactionItem?.amount == viewModel.amount
-                                    ) {
-                                        ctx.showToast("No Changes Made yet")
-                                    } else {
-                                        viewModel.updateTransaction(
+                Row(horizontalArrangement = Arrangement.SpaceAround) {
+                    Row(
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.onSecondary)
+                            .padding(horizontal = 20.dp, vertical = 10.dp)
+                            .clickable {
+                                when (currentItem.value) {
+                                    CurrentItemState.DoesNotExist -> {
+                                        val ts = System.currentTimeMillis()
+                                        // create new transaction
+                                        viewModel.createTransaction(
                                             TransactionItem(
-                                                transactionId = currentItem.value.transactionItem?.transactionId
-                                                    ?: return@clickable,
                                                 expenseType = viewModel.transactionType.value,
-                                                timestamp = currentItem.value.transactionItem?.timestamp
-                                                    ?: return@clickable,
+                                                timestamp = ts,
                                                 note = viewModel.note,
                                                 type = viewModel.transactionSubType.value,
                                                 amount = viewModel.amount,
-                                                date = currentItem.value.transactionItem?.date
-                                                    ?: return@clickable
+                                                date = viewModel.getFormattedIntegerDateFromTimeStamp(
+                                                    ts
+                                                )
                                             )
                                         )
                                     }
-                                }
 
-                                CurrentItemState.Loading -> Unit
+                                    is CurrentItemState.Exists -> {
+                                        //update existing transaction
+                                        if (currentItem.value.transactionItem?.type == viewModel.transactionSubType.value
+                                            && currentItem.value.transactionItem?.expenseType == viewModel.transactionType.value
+                                            && currentItem.value.transactionItem?.note == viewModel.note
+                                            && currentItem.value.transactionItem?.amount == viewModel.amount
+                                        ) {
+                                            ctx.showToast("No Changes Made yet")
+                                        } else {
+                                            viewModel.updateTransaction(
+                                                TransactionItem(
+                                                    transactionId = currentItem.value.transactionItem?.transactionId
+                                                        ?: return@clickable,
+                                                    expenseType = viewModel.transactionType.value,
+                                                    timestamp = currentItem.value.transactionItem?.timestamp
+                                                        ?: return@clickable,
+                                                    note = viewModel.note,
+                                                    type = viewModel.transactionSubType.value,
+                                                    amount = viewModel.amount,
+                                                    date = currentItem.value.transactionItem?.date
+                                                        ?: return@clickable
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    CurrentItemState.Loading -> Unit
+                                }
                             }
+                    ) {
+                        MediumText(
+                            text = if (currentItem.value is CurrentItemState.Exists) "Update Transaction" else "Add Transaction",
+                            color = MaterialTheme.colors.primary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        HSpacer12()
+                        Icon(
+                            imageVector = Icons.Rounded.Check,
+                            tint = MaterialTheme.colors.primary,
+                            modifier = Modifier
+                                .size(16.dp),
+                            contentDescription = "create new transaction"
+                        )
+                    }
+                    if (currentItem.value is CurrentItemState.Exists) {
+                        HSpacer12()
+                        Row(
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.background)
+                                .padding(horizontal = 20.dp, vertical = 10.dp)
+                                .clickable {
+                                    currentItem.value.transactionItem?.transactionId?.let {
+                                        viewModel.deleteTransaction(it)
+                                        scope.launch { state.hide() }
+                                    }
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                tint = MaterialTheme.colors.primary,
+                                modifier = Modifier
+                                    .size(16.dp),
+                                contentDescription = "delete button"
+                            )
+                            HSpacer12()
+                            MediumText(
+                                text = "Delete",
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
-                ) {
-                    MediumText(
-                        text = if (currentItem.value is CurrentItemState.Exists) "Update Transaction" else "Add Transaction",
-                        color = MaterialTheme.colors.primary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    HSpacer12()
-                    Icon(
-                        imageVector = Icons.Rounded.Check,
-                        tint = MaterialTheme.colors.primary,
-                        modifier = Modifier
-                            .size(16.dp),
-                        contentDescription = "create new transaction"
-                    )
+                    }
+
                 }
                 Spacer24()
             }
