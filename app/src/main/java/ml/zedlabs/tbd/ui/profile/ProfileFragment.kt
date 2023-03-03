@@ -83,6 +83,7 @@ class ProfileFragment : BaseAndroidFragment() {
             Spacer24()
             TitleTextH2(text = "App Settings ⚙", modifier = Modifier.align(CenterHorizontally))
             Spacer24()
+            Spacer24()
 //            if (profileViewModel.subState.collectAsState(initial = false).value) {
 //                Row(
 //                    modifier = Modifier.fillMaxWidth(),
