@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +39,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -89,7 +89,6 @@ import ml.zedlabs.tbd.ui.common.DefaultTopButton
 import ml.zedlabs.tbd.ui.common.HSpacer12
 import ml.zedlabs.tbd.ui.common.MediumText
 import ml.zedlabs.tbd.ui.common.PrimaryText
-import ml.zedlabs.tbd.ui.common.SecondaryText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.onboarding.OnboardingViewModel
@@ -643,7 +642,7 @@ class TransactionListFragment : Fragment() {
                         }
                 ) {
                     MediumText(
-                        text = "Add Transaction",
+                        text = if (currentItem.value is CurrentItemState.Exists) "Update Transaction" else "Add Transaction",
                         color = MaterialTheme.colors.primary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
@@ -733,6 +732,10 @@ class TransactionListFragment : Fragment() {
                 HSpacer12()
             }
         }
+    }
+
+    private fun showDeleteTagDialog() {
+        Toast.makeText(requireActivity(), "deleted!", Toast.LENGTH_SHORT).show()
     }
 
     @Composable
