@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.ui.common.DefaultTopButton
 import ml.zedlabs.tbd.ui.common.MediumText
@@ -44,6 +46,7 @@ import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 import ml.zedlabs.tbd.ui.theme.RedBF
 import ml.zedlabs.tbd.ui.theme.WhiteCC
+import ml.zedlabs.tbd.util.changeStatusBarColor
 
 @AndroidEntryPoint
 class ThemeSelectorFragment : Fragment() {
@@ -75,6 +78,10 @@ class ThemeSelectorFragment : Fragment() {
 
     @Composable
     fun MainThemeSelectorLayout(mod: Modifier = Modifier) {
+        (activity as? MainActivity?)?.changeStatusBarColor(
+            MaterialTheme.colors.background.toArgb(),
+            false
+        )
         Column(
             modifier = mod
                 .fillMaxSize()

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import ml.zedlabs.tbd.MainActivity
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.model.Resource
@@ -59,6 +61,7 @@ import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 import ml.zedlabs.tbd.ui.theme.greenHome
 import ml.zedlabs.tbd.ui.theme.redHome
 import ml.zedlabs.tbd.ui.transaction.TransactionViewModel
+import ml.zedlabs.tbd.util.changeStatusBarColor
 
 class HomeFragment : Fragment() {
 
@@ -95,6 +98,10 @@ class HomeFragment : Fragment() {
 
     @Composable
     fun Home() {
+        (activity as? MainActivity?)?.changeStatusBarColor(
+            MaterialTheme.colors.background.toArgb(),
+            false
+        )
         Column {
             // Top 65% is red
             val transations = transactionViewModel.transactionList.collectAsState()
