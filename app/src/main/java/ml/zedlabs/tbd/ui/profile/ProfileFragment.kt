@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
@@ -29,11 +30,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import ml.zedlabs.tbd.MainViewModel
 import ml.zedlabs.tbd.R
 import ml.zedlabs.tbd.base.BaseAndroidFragment
+import ml.zedlabs.tbd.ui.common.DefaultTopButton
 import ml.zedlabs.tbd.ui.common.PrimaryText
 import ml.zedlabs.tbd.ui.common.Spacer12
 import ml.zedlabs.tbd.ui.common.Spacer24
 import ml.zedlabs.tbd.ui.common.TitleTextH2
-import ml.zedlabs.tbd.ui.onboarding.OnboardingFragmentDirections
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 
@@ -71,8 +72,16 @@ class ProfileFragment : BaseAndroidFragment() {
                 .background(MaterialTheme.colors.background)
                 .padding(horizontal = 24.dp)
         ) {
+            Spacer12()
+            DefaultTopButton(
+                imageVector = Icons.Rounded.ArrowBack,
+                bgColor = MaterialTheme.colors.onSecondary,
+                itemColor = MaterialTheme.colors.onPrimary
+            ) {
+                view?.findNavController()?.navigateUp()
+            }
             Spacer24()
-            TitleTextH2(text = "App Settings ⚙", modifier = Modifier)
+            TitleTextH2(text = "App Settings ⚙", modifier = Modifier.align(CenterHorizontally))
             Spacer24()
 //            if (profileViewModel.subState.collectAsState(initial = false).value) {
 //                Row(
