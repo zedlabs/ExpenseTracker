@@ -530,6 +530,7 @@ class TransactionListFragment : Fragment() {
                 )
                 Spacer12()
                 TextField(
+                    modifier = mod.padding(horizontal = 20.dp),
                     value = viewModel.amount,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
@@ -564,6 +565,8 @@ class TransactionListFragment : Fragment() {
                 )
                 Spacer12()
                 TextField(
+
+                    modifier = mod.padding(horizontal = 20.dp),
                     value = viewModel.note,
                     onValueChange = {
                         viewModel.note = it
