@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -30,13 +30,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
@@ -62,7 +61,6 @@ import ml.zedlabs.tbd.ui.onboarding.OnboardingViewModel
 import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 import ml.zedlabs.tbd.ui.theme.greenHome
-import ml.zedlabs.tbd.ui.theme.redHome
 import ml.zedlabs.tbd.ui.transaction.TransactionViewModel
 import ml.zedlabs.tbd.ui.transaction.yEmpty
 import ml.zedlabs.tbd.util.changeStatusBarColor
@@ -146,17 +144,32 @@ class HomeFragment : Fragment() {
                 }
                 LargeText(text = "          This chart tracks your expenses over the past week.")
                 Spacer12()
-                MediumText(
-                    text = "Your largest expense was of ${currency.data}${largestTransactionPastWeek?.amount} on ${largestTransactionPastWeek?.type}",
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (transactionViewModel.lastTenDayTransactionPairs.value.yEmpty()) {
-                    Image(
-                        painterResource(id = R.drawable.finding_person),
-                        "",
-                        modifier = mod.padding(20.dp)
+                if (largestTransactionPastWeek != null) {
+                    MediumText(
+                        text = "Your largest expense was of ${currency.data}${largestTransactionPastWeek.amount} on ${largestTransactionPastWeek.type}",
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
+                }
+                if (transactionViewModel.lastTenDayTransactionPairs.value.yEmpty()) {
+                    Column(modifier = mod.fillMaxWidth()) {
+                        Spacer12()
+                        Image(
+                            painterResource(id = R.drawable.finding_person),
+                            "",
+                            modifier = mod
+                                .fillMaxWidth()
+                                .width(160.dp)
+                                .height(160.dp),
+                        )
+                        Spacer12()
+                        MediumText(
+                            text = "No transactions found to create chart!",
+                            color = MaterialTheme.colors.primary,
+                            modifier = mod.align(CenterHorizontally),
+                            fontSize = 14.sp
+                        )
+                    }
                 } else {
                     LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
                 }
