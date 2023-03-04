@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +36,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -61,6 +64,7 @@ import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 import ml.zedlabs.tbd.ui.theme.greenHome
 import ml.zedlabs.tbd.ui.theme.redHome
 import ml.zedlabs.tbd.ui.transaction.TransactionViewModel
+import ml.zedlabs.tbd.ui.transaction.yEmpty
 import ml.zedlabs.tbd.util.changeStatusBarColor
 
 class HomeFragment : Fragment() {
@@ -124,11 +128,13 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun HomeTopSection() {
+    fun HomeTopSection(
+        mod: Modifier = Modifier
+    ) {
         val currency by onboardingViewModel.localCurrency.collectAsState()
         val largestTransactionPastWeek = transactionViewModel.largestExpensePastWeek.value
         Column(
-            modifier = Modifier
+            modifier = mod
                 .padding(horizontal = 12.dp)
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween,
@@ -145,13 +151,20 @@ class HomeFragment : Fragment() {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-
-                LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
+                if (transactionViewModel.lastTenDayTransactionPairs.value.yEmpty()) {
+                    Image(
+                        painterResource(id = R.drawable.finding_person),
+                        "",
+                        modifier = mod.padding(20.dp)
+                    )
+                } else {
+                    LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
+                }
                 Spacer12()
             }
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = mod.fillMaxWidth()) {
                 Row(
-                    modifier = Modifier
+                    modifier = mod
                         .weight(1f, false)
                         .align(Alignment.End)
                         .background(MaterialTheme.colors.onSecondary)
@@ -169,7 +182,7 @@ class HomeFragment : Fragment() {
                     Icon(
                         imageVector = Icons.Rounded.ArrowForward,
                         tint = MaterialTheme.colors.primary,
-                        modifier = Modifier
+                        modifier = mod
                             .size(18.dp)
                             .rotate(-45f),
                         contentDescription = "Add expense screen redirect button"

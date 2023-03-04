@@ -297,3 +297,12 @@ sealed class CurrentItemState(val transactionItem: TransactionItem?) {
     object DoesNotExist : CurrentItemState(transactionItem = null)
     object Loading : CurrentItemState(transactionItem = null)
 }
+
+fun List<Pair<String, Double>>.yEmpty(): Boolean {
+    this.forEach {
+       if (it.second != 0.0) {
+           return false
+       }
+    }
+    return true
+}

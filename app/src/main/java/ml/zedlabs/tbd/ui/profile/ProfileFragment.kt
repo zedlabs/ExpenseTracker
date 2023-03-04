@@ -70,9 +70,8 @@ class ProfileFragment : BaseAndroidFragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.background)
-                .padding(horizontal = 24.dp)
+                .padding(20.dp)
         ) {
-            Spacer12()
             DefaultTopButton(
                 imageVector = Icons.Rounded.ArrowBack,
                 bgColor = MaterialTheme.colors.onSecondary,
