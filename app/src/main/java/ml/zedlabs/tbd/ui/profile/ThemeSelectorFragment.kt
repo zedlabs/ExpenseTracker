@@ -46,6 +46,10 @@ import ml.zedlabs.tbd.ui.theme.AppThemeType
 import ml.zedlabs.tbd.ui.theme.ExpenseTheme
 import ml.zedlabs.tbd.ui.theme.RedBF
 import ml.zedlabs.tbd.ui.theme.WhiteCC
+import ml.zedlabs.tbd.ui.theme.altOneBg
+import ml.zedlabs.tbd.ui.theme.altOneText
+import ml.zedlabs.tbd.ui.theme.darkBg
+import ml.zedlabs.tbd.ui.theme.darkText
 import ml.zedlabs.tbd.util.changeStatusBarColor
 
 @AndroidEntryPoint
@@ -104,16 +108,16 @@ class ThemeSelectorFragment : Fragment() {
                 color2 = WhiteCC
             )
             ThemeItem(
-                text = "Dark Colors",
+                text = "Alternate Colors",
                 type = AppThemeType.Dark,
-                color1 = RedBF,
-                color2 = WhiteCC
+                color1 = darkBg,
+                color2 = darkText
             )
             ThemeItem(
-                text = "Alternate Light Colors",
+                text = "Alternate Colors #2",
                 type = AppThemeType.LightAlternate,
-                color1 = RedBF,
-                color2 = WhiteCC
+                color1 = altOneBg,
+                color2 = altOneText
             )
         }
 

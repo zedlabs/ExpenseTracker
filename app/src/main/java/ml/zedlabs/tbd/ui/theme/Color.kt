@@ -21,5 +21,13 @@ val redHome = Color(0xFFD67770)
 //Red Theme Color
 val RedBF = Color(0xFFBF1943)
 val WhiteCC = Color(0xFFCCC4C4)
+val White44 = Color(0xFF444242)
 val Black00 = Color(0xFF000000)
 val WhiteFF = Color(0xFFFFFFFF)
+
+val darkBg = Color(0xFF37ac9f)
+val darkText = Color(0xFF1e0b17)
+
+
+val altOneBg = Color(0xFF7ab50d)
+val altOneText = Color(0xFF13291c)

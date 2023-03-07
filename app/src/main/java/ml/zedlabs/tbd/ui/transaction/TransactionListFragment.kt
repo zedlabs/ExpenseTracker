@@ -449,12 +449,14 @@ class TransactionListFragment : Fragment() {
                 text = "Total Expenses this Month: ${currency.data.orEmpty()}${viewModel.selectedMonthExpense.value}",
                 color = MaterialTheme.colors.onSecondary,
                 modifier = mod.align(CenterHorizontally),
+                fontWeight = FontWeight.Medium
             )
             Spacer12()
             MediumText(
                 text = "Total Income this Month: ${currency.data.orEmpty()}${viewModel.selectedMonthIncome.value}",
                 color = MaterialTheme.colors.onSecondary,
                 modifier = mod.align(CenterHorizontally),
+                fontWeight = FontWeight.Medium
             )
             Spacer12()
             Spacer(

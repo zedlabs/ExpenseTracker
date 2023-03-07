@@ -39,15 +39,15 @@ val RedThemeColors = lightColors(
 val LightAlternateColors = lightColors(
     primary = WhiteFF,
     secondary = WhiteCC,
-    onSecondary = Black00,
-    background = Teal200
+    onSecondary = altOneText,
+    background = altOneBg
 )
 
 val DarkThemeColors = lightColors(
     primary = WhiteFF,
     secondary = WhiteCC,
-    onSecondary = Black00,
-    background = Black00
+    onSecondary = darkText,
+    background = darkBg
 )
 
 /**

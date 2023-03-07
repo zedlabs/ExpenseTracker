@@ -152,7 +152,7 @@ class OnboardingFragment : Fragment() {
             ) {
                 MediumText(
                     text = "Continue!",
-                    color = MaterialTheme.colors.onSecondary,
+                    color = MaterialTheme.colors.primary,
                     fontWeight = FontWeight.Light,
                 )
             }

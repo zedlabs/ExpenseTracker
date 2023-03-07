@@ -122,12 +122,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                R.id.home_fragment -> {
-                    changeStatusBarColor(
-                        ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-                        false
-                    )
-                }
+//                R.id.home_fragment -> {
+//                    changeStatusBarColor(
+//                        ContextCompat.getColor(this@MainActivity, R.color.bg_light),
+//                        false
+//                    )
+//                }
             }
         }
 
