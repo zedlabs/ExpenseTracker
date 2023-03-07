@@ -39,7 +39,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -257,15 +259,28 @@ class HomeFragment : Fragment() {
 
                 }
                 val subList = tl.data?.take(5).orEmpty()
-                itemsIndexed(items = subList) { index, item ->
-                    BottomTransactionItem(
-                        item.amount,
-                        item.type,
-                        item.expenseType == TransactionType.Expense.name,
-                        currency.data.orEmpty(),
-                        item.note,
-                        index != subList.lastIndex
-                    )
+                if (subList.isNotEmpty()) {
+                    itemsIndexed(items = subList) { index, item ->
+                        BottomTransactionItem(
+                            item.amount,
+                            item.type,
+                            item.expenseType == TransactionType.Expense.name,
+                            currency.data.orEmpty(),
+                            item.note,
+                            index != subList.lastIndex
+                        )
+                    }
+                } else {
+                    item {
+                        MediumText(
+                            modifier = Modifier.padding(24.dp),
+                            text = "Your most recent transactions will appear here, a more detailed analysis can be found on the all expenses page",
+                            color = MaterialTheme.colors.onSecondary,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraLight,
+                            style = TextStyle(textDecoration = TextDecoration.Underline),
+                        )
+                    }
                 }
                 item {
                     Spacer24()
