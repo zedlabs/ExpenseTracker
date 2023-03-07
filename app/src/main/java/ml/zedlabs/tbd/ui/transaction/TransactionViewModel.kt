@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ml.zedlabs.tbd.databases.expense_type_db.ExpenseTypeItem
 import ml.zedlabs.tbd.databases.transaction_db.TransactionItem
 import ml.zedlabs.tbd.model.Resource
@@ -30,6 +31,7 @@ class TransactionViewModel @Inject constructor(
     val repository: TransactionRepository
 ) : ViewModel() {
 
+    private var calendar: Calendar = Calendar.getInstance()
     val addTypeDialogState = mutableStateOf(false)
     val monthSelectionDialogState = mutableStateOf(false)
     val yearSelectionDialogState = mutableStateOf(false)
@@ -39,7 +41,8 @@ class TransactionViewModel @Inject constructor(
     var amount by mutableStateOf("")
     val transactionType = mutableStateOf("")
     val transactionSubType = mutableStateOf("")
-
+    val selectedMonthIncome = mutableStateOf(0.0)
+    val selectedMonthExpense = mutableStateOf(0.0)
     val selectedYear = mutableStateOf<String?>(getYearFromTimestamp(System.currentTimeMillis()))
     val selectedMonth = mutableStateOf<String?>(getMonthFromTimestamp(System.currentTimeMillis()))
 
@@ -88,8 +91,33 @@ class TransactionViewModel @Inject constructor(
             }
                 .flowOn(Dispatchers.Main)
                 .collectLatest {
+                    asyncUpdateTotalTransactionValues(it)
                     _transactionList.value = Resource.Success(it)
                 }
+        }
+    }
+
+    private fun asyncUpdateTotalTransactionValues(items: List<TransactionItem>) {
+        viewModelScope.launch {
+            var totalIncome = 0.0
+            var totalExpense = 0.0
+            withContext(Dispatchers.IO) {
+                items.forEach {
+                    val amount = try {
+                        it.amount.toDouble()
+                    } catch (ex: NumberFormatException) {
+                        0.0
+                    }
+
+                    if (it.expenseType == TransactionType.Expense.name) {
+                        totalExpense += amount
+                    } else {
+                        totalIncome += amount
+                    }
+                }
+                selectedMonthExpense.value = totalExpense
+                selectedMonthIncome.value = totalIncome
+            }
         }
     }
 
@@ -219,7 +247,7 @@ class TransactionViewModel @Inject constructor(
     }
 
     val pastSixYearsList: List<String> by lazy {
-        val year = Calendar.getInstance().get(Calendar.YEAR)
+        val year = calendar.get(Calendar.YEAR)
         val yearList = mutableListOf<String>()
         yearList.add(0, "All")
         (0..5).forEach {
@@ -229,7 +257,6 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun getYearFromTimestamp(timestamp: Long): String {
-        val calendar = Calendar.getInstance()
         calendar.timeInMillis = timestamp
         return calendar.get(Calendar.YEAR).toString()
     }
@@ -300,9 +327,9 @@ sealed class CurrentItemState(val transactionItem: TransactionItem?) {
 
 fun List<Pair<String, Double>>.yEmpty(): Boolean {
     this.forEach {
-       if (it.second != 0.0) {
-           return false
-       }
+        if (it.second != 0.0) {
+            return false
+        }
     }
     return true
 }

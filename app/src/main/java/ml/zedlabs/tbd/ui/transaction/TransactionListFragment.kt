@@ -391,6 +391,7 @@ class TransactionListFragment : Fragment() {
     fun TransactionHeaderItem(
         mod: Modifier = Modifier,
     ) {
+        val currency by onbViewModel.localCurrency.collectAsState()
         Spacer12()
         Column(
             modifier = mod.fillMaxWidth()
@@ -436,6 +437,32 @@ class TransactionListFragment : Fragment() {
                     vector = Icons.Sharp.ArrowDropDown
                 )
             }
+            Spacer24()
+            Spacer(
+                modifier = rowModifier
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
+            Spacer12()
+            MediumText(
+                text = "Total Expenses this Month: ${currency.data.orEmpty()}${viewModel.selectedMonthExpense.value}",
+                color = MaterialTheme.colors.onSecondary,
+                modifier = mod.align(CenterHorizontally),
+            )
+            Spacer12()
+            MediumText(
+                text = "Total Income this Month: ${currency.data.orEmpty()}${viewModel.selectedMonthIncome.value}",
+                color = MaterialTheme.colors.onSecondary,
+                modifier = mod.align(CenterHorizontally),
+            )
+            Spacer12()
+            Spacer(
+                modifier = rowModifier
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
         }
         Spacer24()
     }
