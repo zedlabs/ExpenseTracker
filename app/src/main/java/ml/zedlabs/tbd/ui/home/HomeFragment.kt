@@ -153,27 +153,29 @@ class HomeFragment : Fragment() {
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                if (transactionViewModel.lastTenDayTransactionPairs.value.yEmpty()) {
-                    Column(modifier = mod.fillMaxWidth()) {
-                        Spacer12()
-                        Image(
-                            painterResource(id = R.drawable.finding_person),
-                            "",
-                            modifier = mod
-                                .fillMaxWidth()
-                                .width(160.dp)
-                                .height(160.dp),
-                        )
-                        Spacer12()
-                        MediumText(
-                            text = "No transactions found to create chart!",
-                            color = MaterialTheme.colors.primary,
-                            modifier = mod.align(CenterHorizontally),
-                            fontSize = 14.sp
-                        )
+                if (transactionViewModel.lastTenDayTransactionPairs.value is Resource.Success) {
+                    if (transactionViewModel.lastTenDayTransactionPairs.value.data?.yEmpty() == true) {
+                        Column(modifier = mod.fillMaxWidth()) {
+                            Spacer12()
+                            Image(
+                                painterResource(id = R.drawable.finding_person),
+                                "",
+                                modifier = mod
+                                    .fillMaxWidth()
+                                    .width(160.dp)
+                                    .height(160.dp),
+                            )
+                            Spacer12()
+                            MediumText(
+                                text = "No transactions found to create chart!",
+                                color = MaterialTheme.colors.primary,
+                                modifier = mod.align(CenterHorizontally),
+                                fontSize = 14.sp
+                            )
+                        }
+                    } else {
+                        LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value.data.orEmpty())
                     }
-                } else {
-                    LastTenDaysSpendChart(lastTenDayExpenses = transactionViewModel.lastTenDayTransactionPairs.value)
                 }
                 Spacer12()
             }

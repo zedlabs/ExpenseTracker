@@ -59,7 +59,8 @@ class TransactionViewModel @Inject constructor(
         MutableStateFlow<Resource<List<ExpenseTypeItem>>>(Resource.Uninitialised())
     val transactionTypeList = _transactionTypeList.asStateFlow()
 
-    val lastTenDayTransactionPairs = mutableStateOf<List<Pair<String, Double>>>(listOf())
+    val lastTenDayTransactionPairs =
+        mutableStateOf<Resource<List<Pair<String, Double>>>>(Resource.Uninitialised())
     val largestExpensePastWeek = mutableStateOf<TransactionItem?>(null)
 
     init {
@@ -287,7 +288,7 @@ class TransactionViewModel @Inject constructor(
             largestExpensePastWeek.value = largestExpenseItem
             list.add(0, Pair("", 0.0))
             list.add(list.lastIndex + 1, Pair("", 0.0))
-            lastTenDayTransactionPairs.value = list
+            lastTenDayTransactionPairs.value = Resource.Success(list)
         }
     }
 
