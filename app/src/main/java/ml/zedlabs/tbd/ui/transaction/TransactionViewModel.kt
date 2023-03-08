@@ -66,13 +66,6 @@ class TransactionViewModel @Inject constructor(
     init {
         getUsersLastFiveTransactions()
         getUsersTransactions()
-        getLargestTransaction()
-    }
-
-    private fun getLargestTransaction() {
-        viewModelScope.launch {
-
-        }
     }
 
     fun getUsersTransactions() {
