@@ -73,7 +73,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navController = Navigation.findNavController(this, R.id.fragment)
-        this.asApplication()?.logFirebase("APP_OPEN")
         //createBillingClient(BillingAction.CHECK_ACTIVE_SUB)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
