@@ -11,7 +11,7 @@ plugins {
 android {
     compileSdk 33
     defaultConfig {
-        applicationId "ml.zedlabs.tbd"
+        applicationId "ml.zedlabs.expenseButler"
         minSdk 23
         targetSdk 33
         versionCode 2

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TBD</string>
+    <string name="app_name">Expense Butler</string>
       <string name="title_domain">domain</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
