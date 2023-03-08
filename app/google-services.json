@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "726609833425",
+    "project_id": "expensebutler",
+    "storage_bucket": "expensebutler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726609833425:android:6215ba799f8ca10c4d84f0",
+        "android_client_info": {
+          "package_name": "ml.zedlabs.expenseButler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "726609833425-dj9i4auso2ii55lbq2i63j2m026pcg2k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDST6u2cxeUOhJmFjxCu-jIY-73ZTFZBd4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "726609833425-dj9i4auso2ii55lbq2i63j2m026pcg2k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,8 +9,18 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.queryPurchasesAsync
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var billingClient: BillingClient
 
     private val profileViewModel: ProfileViewModel by viewModels()
-    private val mainViewModel: MainViewModel by viewModels()
 
     companion object {
         const val P_ID_APP_SUB = "p_id_app_sub"
@@ -63,45 +72,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                mainViewModel.appTheme.collectLatest { value ->
-//                    when (value) {
-//                        AppThemeType.Dark.name -> {
-//                            changeStatusBarColor(
-//                                ContextCompat.getColor(this@MainActivity, R.color.bg_dark),
-//                                false
-//                            )
-//                            binding.root.background =
-//                                ResourcesCompat.getDrawable(resources, R.color.bg_dark, null)
-//                        }
-//
-//                        AppThemeType.LightAlternate.name -> {
-//                            changeStatusBarColor(
-//                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-//                                true
-//                            )
-//                            binding.root.background =
-//                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
-//                        }
-//
-//                        else -> {
-//                            changeStatusBarColor(
-//                                ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-//                                true
-//                            )
-//                            binding.root.background =
-//                                ResourcesCompat.getDrawable(resources, R.color.bg_light, null)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
         navController = Navigation.findNavController(this, R.id.fragment)
-//        binding.bottomNavigation.setupWithNavController(navController)
         this.asApplication()?.logFirebase("APP_OPEN")
-        createBillingClient(BillingAction.CHECK_ACTIVE_SUB)
+        //createBillingClient(BillingAction.CHECK_ACTIVE_SUB)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.transaction_list_fragment -> {
@@ -113,13 +86,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-
-//                R.id.home_fragment -> {
-//                    changeStatusBarColor(
-//                        ContextCompat.getColor(this@MainActivity, R.color.bg_light),
-//                        false
-//                    )
-//                }
             }
         }
 
@@ -244,11 +210,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-//    fun navigateToListBottom() {
-//        val view: View = binding.bottomNavigation.findViewById(R.id.list_bottom)
-//        view.performClick()
-//    }
 
 }
 
