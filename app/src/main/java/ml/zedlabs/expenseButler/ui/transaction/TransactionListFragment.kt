@@ -97,6 +97,7 @@ import ml.zedlabs.expenseButler.ui.onboarding.OnboardingViewModel
 import ml.zedlabs.expenseButler.ui.theme.AppThemeType
 import ml.zedlabs.expenseButler.ui.theme.ExpenseTheme
 import ml.zedlabs.expenseButler.ui.theme.greenHome
+import ml.zedlabs.expenseButler.util.asApplication
 import ml.zedlabs.expenseButler.util.showToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -651,6 +652,11 @@ class TransactionListFragment : Fragment() {
                                                 )
                                             )
                                         )
+                                        transactionTrack(
+                                            amount = viewModel.amount,
+                                            isIncome = if (viewModel.transactionType.value == TransactionType.Income.name) "True" else "False",
+                                            currency = currency.data.orEmpty()
+                                        )
                                     }
 
                                     is CurrentItemState.Exists -> {
@@ -675,6 +681,12 @@ class TransactionListFragment : Fragment() {
                                                     date = currentItem.value.transactionItem?.date
                                                         ?: return@clickable
                                                 )
+                                            )
+                                            transactionTrack(
+                                                amount = viewModel.amount,
+                                                isIncome = if (viewModel.transactionType.value == TransactionType.Income.name) "True" else "False",
+                                                currency = currency.data.orEmpty(),
+                                                update = "True"
                                             )
                                         }
                                     }
@@ -735,6 +747,23 @@ class TransactionListFragment : Fragment() {
             Spacer24()
         }
 
+    }
+
+    private fun transactionTrack(
+        isIncome: String,
+        amount: String,
+        currency: String,
+        update: String = "False"
+    ) {
+        activity?.application
+            ?.asApplication()
+            ?.logFirebase(
+                "NEW_TRANSACTION",
+                Pair("is_income", isIncome),
+                Pair("amount", amount),
+                Pair("currency", currency),
+                Pair("update", update),
+            )
     }
 
     @Composable

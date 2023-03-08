@@ -36,6 +36,7 @@ import ml.zedlabs.expenseButler.ui.common.Spacer24
 import ml.zedlabs.expenseButler.ui.common.TitleTextH2
 import ml.zedlabs.expenseButler.ui.theme.AppThemeType
 import ml.zedlabs.expenseButler.ui.theme.ExpenseTheme
+import ml.zedlabs.expenseButler.util.asApplication
 
 @AndroidEntryPoint
 class ProfileFragment : BaseAndroidFragment() {
@@ -151,6 +152,9 @@ class ProfileFragment : BaseAndroidFragment() {
     }
 
     private fun redirectToOnboarding() {
+        activity?.application
+            ?.asApplication()
+            ?.logFirebase("LANGUAGE_SELECTION_SCREEN")
         val action = ProfileFragmentDirections.profileToOnboarding(true)
         view?.findNavController()?.navigate(action)
     }

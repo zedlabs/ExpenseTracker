@@ -47,6 +47,7 @@ import ml.zedlabs.expenseButler.ui.theme.altOneBg
 import ml.zedlabs.expenseButler.ui.theme.altOneText
 import ml.zedlabs.expenseButler.ui.theme.darkBg
 import ml.zedlabs.expenseButler.ui.theme.darkText
+import ml.zedlabs.expenseButler.util.asApplication
 import ml.zedlabs.expenseButler.util.changeStatusBarColor
 
 @AndroidEntryPoint
@@ -55,6 +56,9 @@ class ThemeSelectorFragment : Fragment() {
     private val mainViewModel: MainViewModel by viewModels()
 
     private fun updateAppTheme(theme: AppThemeType) {
+        activity?.application
+            ?.asApplication()
+            ?.logFirebase("THEME_CHANGED")
         mainViewModel.updateAppTheme(theme.name)
     }
 
