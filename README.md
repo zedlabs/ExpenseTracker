@@ -10,5 +10,5 @@ Android App to track Movie/Tv/Anime using the movieDb API and web scraping using
 - StateFlows
 - Room PL
 - SharedPreferences
-- Jsoup
+- Jsoup for imdb ratings
 
